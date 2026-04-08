@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Pipeline System - Arquitectura</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-text {
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.2);
+        }
+        .section-active { background: #1E293B; border-left: 4px solid #3B82F6; }
+        .section-inactive { opacity: 0.5; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <i data-lucide="video" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold gradient-text">Video Pipeline System</h1>
+                        <p class="text-sm text-slate-400">Arquitectura Técnica & Decisiones</p>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <span class="px-3 py-1 bg-blue-500/20 text-blue-400 text-xs font-medium rounded-full">ACP</span>
+                    <span class="px-3 py-1 bg-purple-500/20 text-purple-400 text-xs font-medium rounded-full">OpenCode</span>
+                    <span class="px-3 py-1 bg-green-500/20 text-green-400 text-xs font-medium rounded-full">MiniMax</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Architecture Diagram -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                <i data-lucide="layout-grid" class="w-6 h-6 text-blue-400"></i>
+                Arquitectura General
+            </h2>
+
+            <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                <svg viewBox="0 0 900 500" class="w-full">
+                    <!-- Frontend -->
+                    <g transform="translate(50, 50)">
+                        <rect x="0" y="0" width="160" height="120" rx="8" fill="#1E293B" stroke="#3B82F6" stroke-width="2"/>
+                        <text x="80" y="30" text-anchor="middle" fill="#60A5FA" font-size="14" font-weight="600">React Frontend</text>
+                        <text x="80" y="55" text-anchor="middle" fill="#94A3B8" font-size="11">EventSource (SSE)</text>
+                        <text x="80" y="75" text-anchor="middle" fill="#94A3B8" font-size="11">useOpenCode Hook</text>
+                        <text x="80" y="95" text-anchor="middle" fill="#94A3B8" font-size="11">Remotion Player</text>
+                    </g>
+
+                    <!-- API Bridge -->
+                    <g transform="translate(300, 50)">
+                        <rect x="0" y="0" width="180" height="160" rx="8" fill="#1E293B" stroke="#8B5CF6" stroke-width="2"/>
+                        <text x="90" y="30" text-anchor="middle" fill="#A78BFA" font-size="14" font-weight="600">Express API</text>
+                        <text x="90" y="55" text-anchor="middle" fill="#94A3B8" font-size="11">SessionManager</text>
+                        <text x="90" y="75" text-anchor="middle" fill="#94A3B8" font-size="11">EventEmitter</text>
+                        <text x="90" y="95" text-anchor="middle" fill="#94A3B8" font-size="11">SSE Endpoint</text>
+                        <text x="90" y="115" text-anchor="middle" fill="#94A3B8" font-size="11">/command, /events</text>
+                    </g>
+
+                    <!-- OpenCode -->
+                    <g transform="translate(570, 50)">
+                        <rect x="0" y="0" width="160" height="120" rx="8" fill="#1E293B" stroke="#10B981" stroke-width="2"/>
+                        <text x="80" y="30" text-anchor="middle" fill="#34D399" font-size="14" font-weight="600">OpenCode</text>
+                        <text x="80" y="55" text-anchor="middle" fill="#94A3B8" font-size="11">opencode acp</text>
+                        <text x="80" y="75" text-anchor="middle" fill="#94A3B8" font-size="11">ACP Protocol</text>
+                        <text x="80" y="95" text-anchor="middle" fill="#94A3B8" font-size="11">stdin/stdout</text>
+                    </g>
+
+                    <!-- Context Folders -->
+                    <g transform="translate(570, 220)">
+                        <rect x="0" y="0" width="160" height="140" rx="8" fill="#1E293B" stroke="#F59E0B" stroke-width="2"/>
+                        <text x="80" y="30" text-anchor="middle" fill="#FBBF24" font-size="14" font-weight="600">projects/</text>
+                        <text x="80" y="55" text-anchor="middle" fill="#94A3B8" font-size="11">promo-mayo-2024/</text>
+                        <text x="80" y="75" text-anchor="middle" fill="#94A3B8" font-size="11">├── system.md</text>
+                        <text x="80" y="92" text-anchor="middle" fill="#94A3B8" font-size="11">├── brand.md</text>
+                        <text x="80" y="109" text-anchor="middle" fill="#94A3B8" font-size="11">└── audience.md</text>
+                    </g>
+
+                    <!-- Database -->
+                    <g transform="translate(50, 220)">
+                        <rect x="0" y="0" width="160" height="100" rx="8" fill="#1E293B" stroke="#EC4899" stroke-width="2"/>
+                        <text x="80" y="35" text-anchor="middle" fill="#F472B6" font-size="14" font-weight="600">SQLite</text>
+                        <text x="80" y="60" text-anchor="middle" fill="#94A3B8" font-size="11">projects, videos</text>
+                        <text x="80" y="78" text-anchor="middle" fill="#94A3B8" font-size="11">scenes, events</text>
+                    </g>
+
+                    <!-- MiniMax -->
+                    <g transform="translate(300, 280)">
+                        <rect x="0" y="0" width="180" height="80" rx="8" fill="#1E293B" stroke="#06B6D4" stroke-width="2"/>
+                        <text x="90" y="35" text-anchor="middle" fill="#22D3EE" font-size="14" font-weight="600">MiniMax API</text>
+                        <text x="90" y="58" text-anchor="middle" fill="#94A3B8" font-size="11">Video Generation</text>
+                    </g>
+
+                    <!-- Arrows -->
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#64748B"/>
+                        </marker>
+                    </defs>
+
+                    <!-- Frontend -> API -->
+                    <line x1="210" y1="110" x2="300" y2="110" stroke="#64748B" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="255" y="100" text-anchor="middle" fill="#64748B" font-size="10">POST /command</text>
+
+                    <!-- API -> OpenCode -->
+                    <line x1="480" y1="110" x2="570" y2="110" stroke="#64748B" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="525" y="100" text-anchor="middle" fill="#64748B" font-size="10">ACP (stdio)</text>
+
+                    <!-- API -> Frontend (SSE) -->
+                    <path d="M 390 50 L 390 30 L 130 30 L 130 50" stroke="#64748B" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                    <text x="260" y="25" text-anchor="middle" fill="#64748B" font-size="10">SSE /events/:id</text>
+
+                    <!-- OpenCode -> Context -->
+                    <line x1="650" y1="170" x2="650" y2="220" stroke="#64748B" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="680" y="200" fill="#64748B" font-size="10">Lee archivos</text>
+
+                    <!-- API -> DB -->
+                    <line x1="300" y1="130" x2="210" y2="220" stroke="#64748B" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- API -> MiniMax -->
+                    <line x1="390" y1="210" x2="390" y2="280" stroke="#64748B" stroke-width="2" marker-end="url(#arrowhead)"/>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Key Decisions -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                <i data-lucide="git-branch" class="w-6 h-6 text-purple-400"></i>
+                Decisiones Arquitectónicas Clave
+            </h2>
+
+            <div class="grid md:grid-cols-2 gap-4">
+                <!-- Decision 1 -->
+                <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 card-hover transition-all">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="folder-tree" class="w-6 h-6 text-blue-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-blue-400 mb-1">Context Convention: projects/{contextId}/</h3>
+                            <p class="text-sm text-slate-400">OpenCode siempre ejecuta desde workspace/ y accede al contexto mediante referencias a carpetas estandarizadas. Elimina problemas de permisos y paths arbitrarios.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Decision 2 -->
+                <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 card-hover transition-all">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="terminal" class="w-6 h-6 text-green-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-green-400 mb-1">ACP sobre CLI</h3>
+                            <p class="text-sm text-slate-400">Agent Client Protocol permite sesiones persistentes, streaming bidireccional y múltiples tool calls. Más complejo pero necesario para el pipeline interactivo.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Decision 3 -->
+                <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 card-hover transition-all">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="layers" class="w-6 h-6 text-purple-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-purple-400 mb-1">Contexto Jerárquico de 3 Niveles</h3>
+                            <p class="text-sm text-slate-400">Project (archivos) → Video (JSON) → Scene (JSON). OpenCode lee archivos directamente; video/scene se pasan via ACP. Permite granularidad y reutilización.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Decision 4 -->
+                <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 card-hover transition-all">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="activity" class="w-6 h-6 text-orange-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-orange-400 mb-1">Session Manager Robusto</h3>
+                            <p class="text-sm text-slate-400">Metadata completa (PID, status, lastMessage), health checks periódicos, tracking de mensajes. Permite recuperación y monitoreo del estado de sesiones ACP.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Decision 5 -->
+                <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 card-hover transition-all">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 bg-pink-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="cpu" class="w-6 h-6 text-pink-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-pink-400 mb-1">Selección de Modelos por Tarea</h3>
+                            <p class="text-sm text-slate-400">Idea→Opus (creatividad), Code→Sonnet (balance), Editing→Haiku (velocidad). Optimiza costo/rendimiento según el tipo de operación.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Decision 6 -->
+                <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 card-hover transition-all">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="radio" class="w-6 h-6 text-cyan-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-cyan-400 mb-1">SSE sobre WebSocket</h3>
+                            <p class="text-sm text-slate-400">Server-Sent Events para streaming unidireccional (servidor→cliente). Más simple, compatible con HTTP/2, reconexión automática. Suficiente para el flujo de eventos.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Workflow -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                <i data-lucide="workflow" class="w-6 h-6 text-green-400"></i>
+                Flujo de Trabajo
+            </h2>
+
+            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <!-- Step 1 -->
+                    <div class="flex items-center gap-3 bg-slate-700/50 px-4 py-3 rounded-lg flex-1">
+                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-sm font-bold">1</div>
+                        <div>
+                            <p class="font-medium text-sm">Crear Proyecto</p>
+                            <p class="text-xs text-slate-400">contextId + archivos base</p>
+                        </div>
+                    </div>
+                    <i data-lucide="arrow-right" class="w-5 h-5 text-slate-500 hidden md:block"></i>
+
+                    <!-- Step 2 -->
+                    <div class="flex items-center gap-3 bg-slate-700/50 px-4 py-3 rounded-lg flex-1">
+                        <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-sm font-bold">2</div>
+                        <div>
+                            <p class="font-medium text-sm">Generar Idea</p>
+                            <p class="text-xs text-slate-400">OpenCode + contexto</p>
+                        </div>
+                    </div>
+                    <i data-lucide="arrow-right" class="w-5 h-5 text-slate-500 hidden md:block"></i>
+
+                    <!-- Step 3 -->
+                    <div class="flex items-center gap-3 bg-slate-700/50 px-4 py-3 rounded-lg flex-1">
+                        <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-sm font-bold">3</div>
+                        <div>
+                            <p class="font-medium text-sm">Aprobar Escenas</p>
+                            <p class="text-xs text-slate-400">Draft → Approved</p>
+                        </div>
+                    </div>
+                    <i data-lucide="arrow-right" class="w-5 h-5 text-slate-500 hidden md:block"></i>
+
+                    <!-- Step 4 -->
+                    <div class="flex items-center gap-3 bg-slate-700/50 px-4 py-3 rounded-lg flex-1">
+                        <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-sm font-bold">4</div>
+                        <div>
+                            <p class="font-medium text-sm">Generar Código</p>
+                            <p class="text-xs text-slate-400">Componentes Remotion</p>
+                        </div>
+                    </div>
+                    <i data-lucide="arrow-right" class="w-5 h-5 text-slate-500 hidden md:block"></i>
+
+                    <!-- Step 5 -->
+                    <div class="flex items-center gap-3 bg-slate-700/50 px-4 py-3 rounded-lg flex-1">
+                        <div class="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center text-sm font-bold">5</div>
+                        <div>
+                            <p class="font-medium text-sm">Generar Videos</p>
+                            <p class="text-xs text-slate-400">MiniMax por escena</p>
+                        </div>
+                    </div>
+                    <i data-lucide="arrow-right" class="w-5 h-5 text-slate-500 hidden md:block"></i>
+
+                    <!-- Step 6 -->
+                    <div class="flex items-center gap-3 bg-slate-700/50 px-4 py-3 rounded-lg flex-1">
+                        <div class="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center text-sm font-bold">6</div>
+                        <div>
+                            <p class="font-medium text-sm">Componer</p>
+                            <p class="text-xs text-slate-400">Remotion final</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hierarchical Context -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                <i data-lucide="database" class="w-6 h-6 text-yellow-400"></i>
+                Jerarquía de Contexto
+            </h2>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Project Level -->
+                <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 bg-yellow-500/20 rounded-lg flex items-center justify-center">
+                            <i data-lucide="folder" class="w-4 h-4 text-yellow-400"></i>
+                        </div>
+                        <h3 class="font-bold text-yellow-400">PROJECT</h3>
+                    </div>
+                    <ul class="text-sm text-slate-400 space-y-2">
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            contextId (folder name)
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            system.md (base)
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            brand.md (guía)
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            audience.md
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            assets/
+                        </li>
+                    </ul>
+                    <div class="mt-4 p-3 bg-slate-900 rounded text-xs font-mono text-slate-500">
+                        OpenCode lee directamente desde projects/{id}/
+                    </div>
+                </div>
+
+                <!-- Video Level -->
+                <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                            <i data-lucide="video" class="w-4 h-4 text-blue-400"></i>
+                        </div>
+                        <h3 class="font-bold text-blue-400">VIDEO</h3>
+                    </div>
+                    <ul class="text-sm text-slate-400 space-y-2">
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            theme (tema)
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            objective (meta)
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            visualStyle (estilo)
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            targetAudience
+                        </li>
+                    </ul>
+                    <div class="mt-4 p-3 bg-slate-900 rounded text-xs font-mono text-slate-500">
+                        JSON enviado via ACP context
+                    </div>
+                </div>
+
+                <!-- Scene Level -->
+                <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                            <i data-lucide="film" class="w-4 h-4 text-purple-400"></i>
+                        </div>
+                        <h3 class="font-bold text-purple-400">SCENE</h3>
+                    </div>
+                    <ul class="text-sm text-slate-400 space-y-2">
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            action (acción)
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            visualElements
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            textOverlay
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            emotion (tono)
+                        </li>
+                    </ul>
+                    <div class="mt-4 p-3 bg-slate-900 rounded text-xs font-mono text-slate-500">
+                        JSON por escena via ACP
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Session Manager Features -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                <i data-lucide="shield" class="w-6 h-6 text-red-400"></i>
+                Session Manager
+            </h2>
+
+            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                <div class="grid md:grid-cols-4 gap-4">
+                    <div class="text-center p-4 bg-slate-700/30 rounded-lg">
+                        <i data-lucide="fingerprint" class="w-8 h-8 text-red-400 mx-auto mb-2"></i>
+                        <p class="font-medium text-sm">Metadata Completa</p>
+                        <p class="text-xs text-slate-500">id, contextId, PID, timestamps</p>
+                    </div>
+                    <div class="text-center p-4 bg-slate-700/30 rounded-lg">
+                        <i data-lucide="heart-pulse" class="w-8 h-8 text-green-400 mx-auto mb-2"></i>
+                        <p class="font-medium text-sm">Health Checks</p>
+                        <p class="text-xs text-slate-500">Verificación periódica de proceso</p>
+                    </div>
+                    <div class="text-center p-4 bg-slate-700/30 rounded-lg">
+                        <i data-lucide="message-square" class="w-8 h-8 text-blue-400 mx-auto mb-2"></i>
+                        <p class="font-medium text-sm">Message Tracking</p>
+                        <p class="text-xs text-slate-500">lastMessage, messageCount</p>
+                    </div>
+                    <div class="text-center p-4 bg-slate-700/30 rounded-lg">
+                        <i data-lucide="zap" class="w-8 h-8 text-yellow-400 mx-auto mb-2"></i>
+                        <p class="font-medium text-sm">Event Emitter</p>
+                        <p class="text-xs text-slate-500">text, tool_call, error, done</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 p-4 bg-slate-900 rounded-lg font-mono text-sm text-slate-400 overflow-x-auto">
+<pre>interface SessionMetadata {
+  id: string;                    // UUID de sesión
+  contextId: string;             // projects/{contextId}/
+  pid?: number;                  // Process ID
+  status: 'running' | 'completed' | 'error';
+  lastMessage?: string;          // Último mensaje
+  messageCount: number;          // Contador
+  startedAt: Date;               // Inicio
+  lastActivityAt: Date;          // Última actividad
+}</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Model Selection -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                <i data-lucide="brain" class="w-6 h-6 text-pink-400"></i>
+                Selección de Modelos por Tarea
+            </h2>
+
+            <div class="overflow-x-auto">
+                <table class="w-full bg-slate-800 rounded-xl border border-slate-700">
+                    <thead>
+                        <tr class="border-b border-slate-700">
+                            <th class="text-left p-4 text-slate-400 font-medium">Tarea</th>
+                            <th class="text-left p-4 text-slate-400 font-medium">Modelo</th>
+                            <th class="text-left p-4 text-slate-400 font-medium">Razón</th>
+                            <th class="text-left p-4 text-slate-400 font-medium">Temp</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                        <tr class="border-b border-slate-700/50">
+                            <td class="p-4 font-medium text-yellow-400">Idea Generation</td>
+                            <td class="p-4">Claude Opus 4.6</td>
+                            <td class="p-4 text-slate-400">Máxima creatividad</td>
+                            <td class="p-4"><span class="px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded">0.8</span></td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50">
+                            <td class="p-4 font-medium text-blue-400">Code Generation</td>
+                            <td class="p-4">Claude Sonnet 4.6</td>
+                            <td class="p-4 text-slate-400">Balance velocidad/calidad</td>
+                            <td class="p-4"><span class="px-2 py-1 bg-blue-500/20 text-blue-400 rounded">0.2</span></td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50">
+                            <td class="p-4 font-medium text-green-400">Editing</td>
+                            <td class="p-4">Claude Haiku 4.5</td>
+                            <td class="p-4 text-slate-400">Rápido para iteraciones</td>
+                            <td class="p-4"><span class="px-2 py-1 bg-green-500/20 text-green-400 rounded">0.3</span></td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 font-medium text-slate-400">Economy</td>
+                            <td class="p-4">GPT-4o-mini</td>
+                            <td class="p-4 text-slate-400">Tareas simples, bajo costo</td>
+                            <td class="p-4"><span class="px-2 py-1 bg-slate-500/20 text-slate-400 rounded">0.7</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center text-slate-500 text-sm pt-8 border-t border-slate-800">
+            <p>Video Pipeline System · Arquitectura Técnica · 2024</p>
+        </footer>
+    </main>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

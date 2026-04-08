@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Pipeline System - Visualización</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .step-line {
+            background: linear-gradient(to bottom, #F57E24 0%, #F57E24 100%);
+            width: 2px;
+            position: absolute;
+            left: 24px;
+            top: 48px;
+            bottom: -24px;
+        }
+        .step:last-child .step-line { display: none; }
+        .folder-tree li::before {
+            content: "";
+            position: absolute;
+            left: -16px;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: #334155;
+        }
+        .folder-tree li:last-child::before { bottom: auto; height: 12px; }
+        .folder-tree li::after {
+            content: "";
+            position: absolute;
+            left: -16px;
+            top: 12px;
+            width: 12px;
+            height: 1px;
+            background: #334155;
+        }
+        .pulse-ring {
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 126, 36, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(245, 126, 36, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 126, 36, 0); }
+        }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .status-dot { animation: statusPulse 2s infinite; }
+        @keyframes statusPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .mock-window {
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+        }
+        .mock-window-header {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-200 min-h-screen">
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-semibold text-white">Video Pipeline System</h1>
+                    <p class="text-sm text-slate-400">Generación de contenido con MiniMax AI + Remotion</p>
+                </div>
+                <div class="ml-auto flex gap-2">
+                    <span class="px-3 py-1 rounded-full bg-orange-500/10 text-orange-400 text-xs font-medium border border-orange-500/20">MiniMax</span>
+                    <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-medium border border-blue-500/20">Remotion</span>
+                    <span class="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-medium border border-emerald-500/20">Web UI</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Navigation Tabs -->
+        <div class="flex gap-1 mb-8 bg-slate-900/50 p-1 rounded-lg inline-flex border border-slate-800">
+            <button onclick="showTab('overview')" id="tab-overview" class="tab-btn px-4 py-2 rounded-md text-sm font-medium transition-all bg-slate-800 text-white">Visión General</button>
+            <button onclick="showTab('webui')" id="tab-webui" class="tab-btn px-4 py-2 rounded-md text-sm font-medium transition-all text-slate-400 hover:text-white">Web Interface</button>
+            <button onclick="showTab('pipeline')" id="tab-pipeline" class="tab-btn px-4 py-2 rounded-md text-sm font-medium transition-all text-slate-400 hover:text-white">Pipeline</button>
+            <button onclick="showTab('data')" id="tab-data" class="tab-btn px-4 py-2 rounded-md text-sm font-medium transition-all text-slate-400 hover:text-white">Datos</button>
+            <button onclick="showTab('minimax')" id="tab-minimax" class="tab-btn px-4 py-2 rounded-md text-sm font-medium transition-all text-slate-400 hover:text-white">MiniMax API</button>
+        </div>
+
+        <!-- TAB: Overview -->
+        <div id="content-overview" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- System Architecture -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+                        <h2 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                            <span class="w-8 h-8 rounded bg-orange-500/20 text-orange-400 flex items-center justify-center text-sm">1</span>
+                            Arquitectura Simplificada
+                        </h2>
+                        <div class="relative">
+                            <svg viewBox="0 0 800 350" class="w-full">
+                                <!-- Web UI -->
+                                <rect x="20" y="100" width="100" height="80" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+                                <text x="70" y="130" text-anchor="middle" fill="#60a5fa" font-size="11">Web UI</text>
+                                <text x="70" y="148" text-anchor="middle" fill="#94a3b8" font-size="9">React + Vite</text>
+                                <text x="70" y="164" text-anchor="middle" fill="#94a3b8" font-size="9">(Usuario)</text>
+
+                                <!-- Arrow to API -->
+                                <path d="M 130 140 L 180 140" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                                <!-- API -->
+                                <rect x="190" y="100" width="100" height="80" rx="8" fill="#1e293b" stroke="#a855f7" stroke-width="2"/>
+                                <text x="240" y="130" text-anchor="middle" fill="#c084fc" font-size="11">API</text>
+                                <text x="240" y="148" text-anchor="middle" fill="#94a3b8" font-size="9">Express</text>
+                                <text x="240" y="164" text-anchor="middle" fill="#94a3b8" font-size="9">+ Agente</text>
+
+                                <!-- Arrow to SQLite -->
+                                <path d="M 240 190 L 240 230" stroke="#64748b" stroke-width="2" stroke-dasharray="4" marker-end="url(#arrowhead)"/>
+
+                                <!-- SQLite -->
+                                <rect x="190" y="240" width="100" height="60" rx="8" fill="#1e293b" stroke="#64748b" stroke-width="2"/>
+                                <text x="240" y="265" text-anchor="middle" fill="#94a3b8" font-size="11">SQLite</text>
+                                <text x="240" y="283" text-anchor="middle" fill="#64748b" font-size="9">Metadatos</text>
+
+                                <!-- Arrow to MiniMax -->
+                                <path d="M 300 140 L 350 140" stroke="#F57E24" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                                <!-- MiniMax -->
+                                <rect x="360" y="100" width="100" height="80" rx="8" fill="#1e293b" stroke="#F57E24" stroke-width="2"/>
+                                <circle cx="410" cy="130" r="12" fill="#F57E24" class="pulse-ring"/>
+                                <text x="410" y="160" text-anchor="middle" fill="#fff" font-size="11">MiniMax</text>
+                                <text x="410" y="176" text-anchor="middle" fill="#F57E24" font-size="9">Hailuo AI</text>
+
+                                <!-- Arrow to Filesystem -->
+                                <path d="M 470 140 L 520 140" stroke="#10b981" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                                <!-- Filesystem -->
+                                <rect x="530" y="80" width="120" height="140" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="2"/>
+                                <text x="590" y="110" text-anchor="middle" fill="#34d399" font-size="11">Filesystem</text>
+                                <text x="590" y="130" text-anchor="middle" fill="#94a3b8" font-size="9">/content/</text>
+                                <text x="590" y="148" text-anchor="middle" fill="#94a3b8" font-size="9">/clips/</text>
+                                <text x="590" y="166" text-anchor="middle" fill="#94a3b8" font-size="9">/remotion/</text>
+                                <text x="590" y="184" text-anchor="middle" fill="#94a3b8" font-size="9">/output/</text>
+
+                                <!-- Arrow to Remotion -->
+                                <path d="M 660 140 L 720 140" stroke="#10b981" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                                <!-- Remotion -->
+                                <rect x="730" y="100" width="80" height="80" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="2"/>
+                                <text x="770" y="135" text-anchor="middle" fill="#34d399" font-size="11">Remotion</text>
+                                <text x="770" y="155" text-anchor="middle" fill="#fff" font-size="9">Player</text>
+
+                                <!-- Config File Box -->
+                                <rect x="530" y="260" width="120" height="50" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="2"/>
+                                <text x="590" y="280" text-anchor="middle" fill="#fbbf24" font-size="11">config.yaml</text>
+                                <text x="590" y="298" text-anchor="middle" fill="#94a3b8" font-size="9">Paths predefinidos</text>
+
+                                <!-- Config to API -->
+                                <path d="M 530 285 L 300 285 L 300 190" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4" marker-end="url(#arrowhead)"/>
+
+                                <!-- Markers -->
+                                <defs>
+                                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                        <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+                                    </marker>
+                                </defs>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Key Principles -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+                            <div class="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center mb-3">
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                                </svg>
+                            </div>
+                            <h3 class="font-medium text-white mb-1">Web-Based</h3>
+                            <p class="text-sm text-slate-400">Interfaz web completa. No hay CLI. Todo vía API + React.</p>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+                            <div class="w-10 h-10 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center mb-3">
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                                </svg>
+                            </div>
+                            <h3 class="font-medium text-white mb-1">SQLite + Files</h3>
+                            <p class="text-sm text-slate-400">DB solo para metadatos. Videos van al filesystem.</p>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+                            <div class="w-10 h-10 rounded-lg bg-yellow-500/10 text-yellow-400 flex items-center justify-center mb-3">
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                            </div>
+                            <h3 class="font-medium text-white mb-1">Config File</h3>
+                            <p class="text-sm text-slate-400">Paths de contexto predefinidos en config.yaml. No se pasan por parámetro.</p>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+                            <div class="w-10 h-10 rounded-lg bg-orange-500/10 text-orange-400 flex items-center justify-center mb-3">
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <h3 class="font-medium text-white mb-1">MiniMax Hailuo</h3>
+                            <p class="text-sm text-slate-400">Generación de clips via MiniMax API. 6-10 segundos por clip.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Stats -->
+                <div class="space-y-4">
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+                        <h3 class="font-semibold text-white mb-4">Componentes</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-2 h-2 rounded-full bg-blue-400"></div>
+                                <span class="text-sm text-slate-300">Web UI (Vite + React)</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-2 h-2 rounded-full bg-purple-400"></div>
+                                <span class="text-sm text-slate-300">API (Express)</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-2 h-2 rounded-full bg-slate-400"></div>
+                                <span class="text-sm text-slate-300">SQLite (better-sqlite3)</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-2 h-2 rounded-full bg-orange-400"></div>
+                                <span class="text-sm text-slate-300">MiniMax Service</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
+                                <span class="text-sm text-slate-300">Remotion Player</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-2 h-2 rounded-full bg-yellow-400"></div>
+                                <span class="text-sm text-slate-300">Config YAML</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+                        <h3 class="font-semibold text-white mb-4">MiniMax Specs</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-slate-400">Modelo</span>
+                                    <span class="text-white font-medium">MiniMax-Hailuo-02</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-slate-400">Duración max</span>
+                                    <span class="text-white font-medium">10 segundos</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-slate-400">Resolución</span>
+                                    <span class="text-white font-medium">1080p</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-slate-400">Formato</span>
+                                    <span class="text-white font-medium">9:16 (vertical)</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-slate-400">Tiempo gen</span>
+                                    <span class="text-white font-medium">30-120s</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Web Interface -->
+        <div id="content-webui" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Mock UI -->
+                <div class="mock-window rounded-xl overflow-hidden">
+                    <div class="mock-window-header px-4 py-3 flex items-center gap-2">
+                        <div class="flex gap-1.5">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        </div>
+                        <span class="ml-4 text-sm text-slate-400">Video Pipeline Studio</span>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        <!-- Prompt Input -->
+                        <div>
+                            <label class="block text-sm font-medium text-slate-300 mb-2">Prompt del Video</label>
+                            <textarea class="w-full h-24 bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-white resize-none" placeholder="Describe el video que quieres generar...">Video promocional de membresías GymSpace con 20% de descuento</textarea>
+                        </div>
+
+                        <!-- Context Select -->
+                        <div>
+                            <label class="block text-sm font-medium text-slate-300 mb-2">Contexto</label>
+                            <select class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+                                <option>content/promos (3 archivos)</option>
+                                <option>content/brand (5 archivos)</option>
+                                <option>content/tutorials (8 archivos)</option>
+                            </select>
+                            <p class="text-xs text-slate-500 mt-1">Configurado en config.yaml</p>
+                        </div>
+
+                        <!-- Settings -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">Clips</label>
+                                <select class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+                                    <option>4 clips (32s)</option>
+                                    <option>5 clips (40s)</option>
+                                    <option>6 clips (48s)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">Modelo</label>
+                                <select class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+                                    <option>MiniMax-Hailuo-02</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Generate Button -->
+                        <button class="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            Generar Video
+                        </button>
+
+                        <!-- Progress -->
+                        <div class="border-t border-slate-700 pt-4">
+                            <h4 class="text-sm font-medium text-slate-300 mb-3">Progreso</h4>
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs text-slate-400 w-20">Analizando</span>
+                                    <div class="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
+                                        <div class="h-full bg-emerald-500 w-full"></div>
+                                    </div>
+                                    <span class="text-xs text-emerald-400">✓</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs text-slate-400 w-20">Scene 1</span>
+                                    <div class="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
+                                        <div class="h-full bg-emerald-500 w-full"></div>
+                                    </div>
+                                    <span class="text-xs text-emerald-400">✓</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs text-slate-400 w-20">Scene 2</span>
+                                    <div class="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
+                                        <div class="h-full bg-orange-500 w-3/4 animate-pulse"></div>
+                                    </div>
+                                    <span class="text-xs text-orange-400">⟳</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs text-slate-400 w-20">Scene 3</span>
+                                    <div class="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
+                                        <div class="h-full bg-slate-600 w-0"></div>
+                                    </div>
+                                    <span class="text-xs text-slate-500">○</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Endpoints -->
+                <div class="space-y-4">
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+                        <h3 class="font-semibold text-white mb-4">API Endpoints</h3>
+                        <div class="space-y-3">
+                            <div class="mono text-sm">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 text-xs">GET</span>
+                                    <span class="text-slate-300">/api/config</span>
+                                </div>
+                                <p class="text-xs text-slate-500 ml-14">Obtener paths y modelos configurados</p>
+                            </div>
+                            <div class="mono text-sm">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-xs">POST</span>
+                                    <span class="text-slate-300">/api/videos</span>
+                                </div>
+                                <p class="text-xs text-slate-500 ml-14">Crear nuevo video (prompt + context_key)</p>
+                            </div>
+                            <div class="mono text-sm">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 text-xs">GET</span>
+                                    <span class="text-slate-300">/api/videos/:id</span>
+                                </div>
+                                <p class="text-xs text-slate-500 ml-14">Estado del video y sus clips</p>
+                            </div>
+                            <div class="mono text-sm">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="px-2 py-0.5 rounded bg-orange-500/20 text-orange-400 text-xs">POST</span>
+                                    <span class="text-slate-300">/api/videos/:id/regenerate</span>
+                                </div>
+                                <p class="text-xs text-slate-500 ml-14">Re-generar clip específico</p>
+                            </div>
+                            <div class="mono text-sm">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-400 text-xs">GET</span>
+                                    <span class="text-slate-300">/api/videos/:id/preview</span>
+                                </div>
+                                <p class="text-xs text-slate-500 ml-14">URL para Remotion Player</p>
+                            </div>
+                            <div class="mono text-sm">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="px-2 py-0.5 rounded bg-pink-500/20 text-pink-400 text-xs">POST</span>
+                                    <span class="text-slate-300">/api/videos/:id/export</span>
+                                </div>
+                                <p class="text-xs text-slate-500 ml-14">Renderizar y exportar MP4</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+                        <h3 class="font-semibold text-white mb-4">Request Example</h3>
+                        <div class="mono text-xs bg-slate-950 p-4 rounded-lg border border-slate-800 overflow-x-auto">
+                            <pre class="text-slate-300"><span class="text-purple-400">POST</span> /api/videos
+<span class="text-slate-500">Content-Type:</span> application/json
+
+{
+  <span class="text-yellow-300">"prompt"</span>: <span class="text-green-300">"Video promocional membresías"</span>,
+  <span class="text-yellow-300">"contextKey"</span>: <span class="text-green-300">"promos"</span>,
+  <span class="text-yellow-300">"clipCount"</span>: <span class="text-orange-400">4</span>,
+  <span class="text-yellow-300">"model"</span>: <span class="text-green-300">"minimax-hailuo-02"</span>
+}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Pipeline -->
+        <div id="content-pipeline" class="tab-content hidden">
+            <div class="max-w-3xl mx-auto">
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-8">
+                    <h2 class="text-xl font-semibold text-white mb-8">Pipeline de Generación (Web Flow)</h2>
+
+                    <div class="relative space-y-8">
+                        <!-- Step 1 -->
+                        <div class="step relative pl-16">
+                            <div class="step-line"></div>
+                            <div class="absolute left-0 w-12 h-12 rounded-full bg-blue-500/20 border-2 border-blue-500 flex items-center justify-center">
+                                <span class="text-blue-400 font-bold">1</span>
+                            </div>
+                            <div class="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <h3 class="font-semibold text-white">Usuario en Web</h3>
+                                    <span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 text-xs">UI</span>
+                                </div>
+                                <p class="text-sm text-slate-400 mb-3">El usuario escribe un prompt y selecciona el contexto predefinido desde un dropdown.</p>
+                                <div class="bg-slate-950 p-3 rounded border border-slate-800">
+                                    <p class="text-sm text-slate-300">Prompt: <span class="text-orange-400">"Video promocional de membresías"</span></p>
+                                    <p class="text-sm text-slate-300">Contexto: <span class="text-blue-400">promos</span> (resuelto desde config)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="step relative pl-16">
+                            <div class="step-line"></div>
+                            <div class="absolute left-0 w-12 h-12 rounded-full bg-purple-500/20 border-2 border-purple-500 flex items-center justify-center">
+                                <span class="text-purple-400 font-bold">2</span>
+                            </div>
+                            <div class="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <h3 class="font-semibold text-white">API + Agente</h3>
+                                    <span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 text-xs">Backend</span>
+                                </div>
+                                <p class="text-sm text-slate-400 mb-3">La API lee el config, carga el contexto y el agente genera la idea y secuencia.</p>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="bg-slate-950 p-2 rounded">
+                                        <p class="text-xs text-slate-500">Lee config.yaml</p>
+                                        <p class="text-sm text-slate-300">paths.context.promos</p>
+                                    </div>
+                                    <div class="bg-slate-950 p-2 rounded">
+                                        <p class="text-xs text-slate-500">Guarda en SQLite</p>
+                                        <p class="text-sm text-slate-300">video + scenes</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="step relative pl-16">
+                            <div class="step-line"></div>
+                            <div class="absolute left-0 w-12 h-12 rounded-full bg-orange-500/20 border-2 border-orange-500 flex items-center justify-center">
+                                <span class="text-orange-400 font-bold">3</span>
+                            </div>
+                            <div class="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <h3 class="font-semibold text-white">MiniMax Generation</h3>
+                                    <span class="px-2 py-0.5 rounded bg-orange-500/20 text-orange-300 text-xs">Async</span>
+                                </div>
+                                <p class="text-sm text-slate-400 mb-3">Se envían los prompts a MiniMax API. Cada clip se genera en paralelo.</p>
+                                <div class="mono text-xs bg-slate-950 p-3 rounded border border-slate-800 text-slate-300">
+                                    <span class="text-slate-500">POST</span> https://api.minimax.io/v1/video_generation<br/>
+                                    <span class="text-purple-400">prompt</span>: "Cinematic gym shot..."<br/>
+                                    <span class="text-purple-400">model</span>: "MiniMax-Hailuo-02"<br/>
+                                    <span class="text-purple-400">duration</span>: <span class="text-orange-400">8</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 4 -->
+                        <div class="step relative pl-16">
+                            <div class="step-line"></div>
+                            <div class="absolute left-0 w-12 h-12 rounded-full bg-emerald-500/20 border-2 border-emerald-500 flex items-center justify-center">
+                                <span class="text-emerald-400 font-bold">4</span>
+                            </div>
+                            <div class="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <h3 class="font-semibold text-white">Download + Storage</h3>
+                                    <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-xs">Files</span>
+                                </div>
+                                <p class="text-sm text-slate-400 mb-3">Cuando MiniMax completa, se descarga el video al filesystem y se actualiza SQLite.</p>
+                                <div class="mono text-xs bg-slate-950 p-3 rounded border border-slate-800 text-slate-300">
+                                    <span class="text-slate-500"># Download</span><br/>
+                                    GET /v1/files/{file_id} → ./clips/scene-01.mp4<br/><br/>
+                                    <span class="text-slate-500"># Update DB</span><br/>
+                                    UPDATE scenes SET status='completed', path='...'
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 5 -->
+                        <div class="step relative pl-16">
+                            <div class="absolute left-0 w-12 h-12 rounded-full bg-pink-500/20 border-2 border-pink-500 flex items-center justify-center">
+                                <span class="text-pink-400 font-bold">5</span>
+                            </div>
+                            <div class="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <h3 class="font-semibold text-white">Preview + Export</h3>
+                                    <span class="px-2 py-0.5 rounded bg-pink-500/20 text-pink-300 text-xs">Final</span>
+                                </div>
+                                <p class="text-sm text-slate-400 mb-3">Remotion Player carga los clips generados para preview. Export genera MP4 final.</p>
+                                <div class="flex gap-3">
+                                    <div class="flex-1 bg-slate-950 p-3 rounded text-center">
+                                        <p class="text-xs text-slate-500">Player</p>
+                                        <p class="text-sm text-slate-300">&lt;Video src={clip} /&gt;</p>
+                                    </div>
+                                    <div class="flex-1 bg-slate-950 p-3 rounded text-center">
+                                        <p class="text-xs text-slate-500">Export</p>
+                                        <p class="text-sm text-slate-300">ffmpeg concat</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Data -->
+        <div id="content-data" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Config File -->
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+                    <h2 class="text-lg font-semibold text-white mb-4">config.yaml</h2>
+                    <div class="mono text-sm bg-slate-950 p-4 rounded-lg border border-slate-800 overflow-x-auto">
+                        <pre class="text-slate-300"><span class="text-slate-500"># Rutas de contexto predefinidas</span>
+<span class="text-purple-400">context</span>:
+  <span class="text-purple-400">paths</span>:
+    <span class="text-yellow-300">promos</span>: <span class="text-green-300">"./content/promos"</span>
+    <span class="text-yellow-300">brand</span>: <span class="text-green-300">"./content/brand"</span>
+    <span class="text-yellow-300">tutorials</span>: <span class="text-green-300">"./content/tutorials"</span>
+    <span class="text-yellow-300">social</span>: <span class="text-green-300">"./content/social"</span>
+
+<span class="text-purple-400">models</span>:
+  <span class="text-purple-400">default</span>: <span class="text-green-300">"minimax-hailuo-02"</span>
+  <span class="text-purple-400">available</span>:
+    - <span class="text-green-300">"minimax-hailuo-02"</span>
+    - <span class="text-green-300">"minimax-hailuo-2.3"</span>
+
+<span class="text-purple-400">generation</span>:
+  <span class="text-purple-400">defaults</span>:
+    <span class="text-purple-400">duration</span>: <span class="text-orange-400">8</span>
+    <span class="text-purple-400">resolution</span>: <span class="text-green-300">"1080p"</span>
+    <span class="text-purple-400">aspectRatio</span>: <span class="text-green-300">"9:16"</span>
+  <span class="text-purple-400">limits</span>:
+    <span class="text-purple-400">maxClips</span>: <span class="text-orange-400">6</span>
+    <span class="text-purple-400">maxPromptLength</span>: <span class="text-orange-400">500</span>
+
+<span class="text-purple-400">output</span>:
+  <span class="text-purple-400">basePath</span>: <span class="text-green-300">"./outputs"</span>
+  <span class="text-purple-400">formats</span>: [<span class="text-green-300">"mp4"</span>, <span class="text-green-300">"webm"</span>]</pre>
+                    </div>
+                </div>
+
+                <!-- SQLite Schema -->
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+                    <h2 class="text-lg font-semibold text-white mb-4">SQLite Schema</h2>
+                    <div class="mono text-sm bg-slate-950 p-4 rounded-lg border border-slate-800 overflow-x-auto">
+                        <pre class="text-slate-300"><span class="text-slate-500">-- Videos (metadatos)</span>
+<span class="text-purple-400">CREATE TABLE</span> videos (
+  id <span class="text-blue-400">TEXT PRIMARY KEY</span>,
+  prompt <span class="text-blue-400">TEXT NOT NULL</span>,
+  context_key <span class="text-blue-400">TEXT</span>,
+  status <span class="text-blue-400">TEXT</span>, <span class="text-slate-500">-- draft|generating|completed</span>
+  total_clips <span class="text-blue-400">INTEGER</span>,
+  created_at <span class="text-blue-400">DATETIME</span>,
+  completed_at <span class="text-blue-400">DATETIME</span>
+);
+
+<span class="text-slate-500">-- Scenes/Clips</span>
+<span class="text-purple-400">CREATE TABLE</span> scenes (
+  id <span class="text-blue-400">TEXT PRIMARY KEY</span>,
+  video_id <span class="text-blue-400">TEXT</span>,
+  sequence <span class="text-blue-400">INTEGER</span>,
+  name <span class="text-blue-400">TEXT</span>,
+  prompt <span class="text-blue-400">TEXT</span>,
+  status <span class="text-blue-400">TEXT</span>, <span class="text-slate-500">-- pending|queued|generating|completed|failed</span>
+  task_id <span class="text-blue-400">TEXT</span>, <span class="text-slate-500">-- MiniMax task_id</span>
+  file_id <span class="text-blue-400">TEXT</span>, <span class="text-slate-500">-- MiniMax file_id</span>
+  local_path <span class="text-blue-400">TEXT</span>,
+  error_message <span class="text-blue-400">TEXT</span>,
+  created_at <span class="text-blue-400">DATETIME</span>
+);
+
+<span class="text-slate-500">-- Generation logs</span>
+<span class="text-purple-400">CREATE TABLE</span> generations (
+  id <span class="text-blue-400">TEXT PRIMARY KEY</span>,
+  scene_id <span class="text-blue-400">TEXT</span>,
+  provider <span class="text-blue-400">TEXT</span>, <span class="text-slate-500">-- 'minimax'</span>
+  task_id <span class="text-blue-400">TEXT</span>,
+  status <span class="text-blue-400">TEXT</span>,
+  started_at <span class="text-blue-400">DATETIME</span>,
+  completed_at <span class="text-blue-400">DATETIME</span>
+);</pre>
+                    </div>
+                </div>
+
+                <!-- Filesystem Structure -->
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 lg:col-span-2">
+                    <h2 class="text-lg font-semibold text-white mb-4">Estructura de Archivos</h2>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="mono text-sm">
+                            <p class="text-slate-500 mb-2"># Contenido fuente (config.paths)</p>
+                            <ul class="folder-tree space-y-1">
+                                <li class="relative pl-4">
+                                    <span class="text-blue-400">📁</span> <span class="text-white">content/</span>
+                                </li>
+                                <li class="relative pl-8">
+                                    <span class="text-blue-400">📁</span> <span class="text-slate-300">promos/</span>
+                                </li>
+                                <li class="relative pl-12">
+                                    <span class="text-slate-400">📄</span> <span class="text-slate-400">mayo-2024.md</span>
+                                </li>
+                                <li class="relative pl-12">
+                                    <span class="text-slate-400">🖼</span> <span class="text-slate-400">banner.jpg</span>
+                                </li>
+                                <li class="relative pl-8">
+                                    <span class="text-blue-400">📁</span> <span class="text-slate-300">brand/</span>
+                                </li>
+                                <li class="relative pl-12">
+                                    <span class="text-slate-400">🖼</span> <span class="text-slate-400">logo.png</span>
+                                </li>
+                                <li class="relative pl-8">
+                                    <span class="text-blue-400">📁</span> <span class="text-slate-300">tutorials/</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="mono text-sm">
+                            <p class="text-slate-500 mb-2"># Outputs generados</p>
+                            <ul class="folder-tree space-y-1">
+                                <li class="relative pl-4">
+                                    <span class="text-emerald-400">📁</span> <span class="text-white">outputs/</span>
+                                </li>
+                                <li class="relative pl-8">
+                                    <span class="text-orange-400">📁</span> <span class="text-slate-300">{video_id}/</span>
+                                </li>
+                                <li class="relative pl-12">
+                                    <span class="text-emerald-400">📄</span> <span class="text-emerald-300">video.json</span>
+                                </li>
+                                <li class="relative pl-12">
+                                    <span class="text-pink-400">📁</span> <span class="text-slate-300">clips/</span>
+                                </li>
+                                <li class="relative pl-16">
+                                    <span class="text-pink-400">🎬</span> <span class="text-slate-400">scene-01.mp4</span>
+                                </li>
+                                <li class="relative pl-16">
+                                    <span class="text-pink-400">🎬</span> <span class="text-slate-400">scene-02.mp4</span>
+                                </li>
+                                <li class="relative pl-12">
+                                    <span class="text-red-400">📁</span> <span class="text-slate-300">final/</span>
+                                </li>
+                                <li class="relative pl-16">
+                                    <span class="text-red-400">🎬</span> <span class="text-slate-400">reel.mp4</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: MiniMax API -->
+        <div id="content-minimax" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- API Flow -->
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+                    <h2 class="text-lg font-semibold text-white mb-4">MiniMax API Flow</h2>
+                    <div class="space-y-4">
+                        <div class="flex gap-4">
+                            <div class="flex flex-col items-center">
+                                <div class="w-10 h-10 rounded-full bg-blue-500/20 border border-blue-500 flex items-center justify-center text-blue-400 font-bold">1</div>
+                                <div class="w-0.5 h-12 bg-slate-700"></div>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-medium text-white">Create Task</h3>
+                                <p class="text-sm text-slate-400 mb-2">POST /v1/video_generation</p>
+                                <div class="mono text-xs bg-slate-950 p-2 rounded border border-slate-800 text-slate-300">
+                                    { "model": "MiniMax-Hailuo-02", "prompt": "...", "duration": 8 }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="flex flex-col items-center">
+                                <div class="w-10 h-10 rounded-full bg-yellow-500/20 border border-yellow-500 flex items-center justify-center text-yellow-400 font-bold">2</div>
+                                <div class="w-0.5 h-12 bg-slate-700"></div>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-medium text-white">Poll Status</h3>
+                                <p class="text-sm text-slate-400 mb-2">GET /v1/video_generation?task_id=...</p>
+                                <div class="mono text-xs bg-slate-950 p-2 rounded border border-slate-800 text-slate-300">
+                                    { "status": "processing", "task_id": "..." }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="flex flex-col items-center">
+                                <div class="w-10 h-10 rounded-full bg-emerald-500/20 border border-emerald-500 flex items-center justify-center text-emerald-400 font-bold">3</div>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-medium text-white">Download</h3>
+                                <p class="text-sm text-slate-400 mb-2">GET /v1/files/{file_id}</p>
+                                <div class="mono text-xs bg-slate-950 p-2 rounded border border-slate-800 text-slate-300">
+                                    Binary video data → ./clips/scene-01.mp4
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Parameters -->
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+                    <h2 class="text-lg font-semibold text-white mb-4">Parámetros</h2>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center py-2 border-b border-slate-800">
+                            <div>
+                                <p class="text-sm font-medium text-white">model</p>
+                                <p class="text-xs text-slate-500">Modelo de generación</p>
+                            </div>
+                            <span class="text-xs text-orange-400 bg-orange-500/10 px-2 py-1 rounded">MiniMax-Hailuo-02</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-slate-800">
+                            <div>
+                                <p class="text-sm font-medium text-white">prompt</p>
+                                <p class="text-xs text-slate-500">Descripción del video</p>
+                            </div>
+                            <span class="text-xs text-slate-400">Max 500 chars</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-slate-800">
+                            <div>
+                                <p class="text-sm font-medium text-white">duration</p>
+                                <p class="text-xs text-slate-500">Duración en segundos</p>
+                            </div>
+                            <span class="text-xs text-slate-400">6, 8, o 10</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-slate-800">
+                            <div>
+                                <p class="text-sm font-medium text-white">resolution</p>
+                                <p class="text-xs text-slate-500">Calidad del video</p>
+                            </div>
+                            <span class="text-xs text-slate-400">720p o 1080p</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prompt Tips -->
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 lg:col-span-2">
+                    <h2 class="text-lg font-semibold text-white mb-4">Prompt Engineering para MiniMax</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <h3 class="font-medium text-emerald-400 mb-2">✓ Buenas prácticas</h3>
+                            <ul class="space-y-2 text-sm text-slate-400">
+                                <li>• Incluir movimiento de cámara: [dolly in], [handheld], [static]</li>
+                                <li>• Especificar estilo: "cinematic shot", "8k quality"</li>
+                                <li>• Describir iluminación: "golden hour", "soft lighting"</li>
+                                <li>• Mantener prompts concisos (300-500 chars)</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-red-400 mb-2">✗ Evitar</h3>
+                            <ul class="space-y-2 text-sm text-slate-400">
+                                <li>• Texto o logos (MiniMax no genera texto legible)</li>
+                                <li>• Rostros específicos o personas identificables</li>
+                                <li>• Prompts muy largos (>500 caracteres)</li>
+                                <li>• Contenido con derechos de autor</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('bg-slate-800', 'text-white');
+                el.classList.add('text-slate-400');
+            });
+
+            document.getElementById('content-' + tabName).classList.remove('hidden');
+            document.getElementById('tab-' + tabName).classList.add('bg-slate-800', 'text-white');
+            document.getElementById('tab-' + tabName).classList.remove('text-slate-400');
+        }
+    </script>
+</body>
+</html>

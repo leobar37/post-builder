@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Pipeline System - Guía Completa</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    .gradient-bg { background: linear-gradient(135deg, #1e3a5f 0%, #0d1f33 100%); }
+    .card-hover { transition: all 0.3s ease; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.3); }
+    .step-connector { position: relative; }
+    .step-connector::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: -24px;
+      width: 24px;
+      height: 2px;
+      background: #3b82f6;
+    }
+    .step-connector:last-child::after { display: none; }
+    .code-block { background: #1e1e1e; border-radius: 8px; overflow: hidden; }
+    .tab-active { background: #3b82f6; color: white; }
+    .tab-inactive { background: #1e3a5f; color: #94a3b8; }
+    .tab-inactive:hover { background: #2563eb; color: white; }
+  </style>
+</head>
+<body class="gradient-bg min-h-screen text-gray-100">
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <!-- Header -->
+    <header class="text-center mb-12">
+      <div class="inline-flex items-center gap-3 mb-4 px-4 py-2 bg-blue-900/50 rounded-full border border-blue-700">
+        <i data-lucide="video" class="w-5 h-5 text-blue-400"></i>
+        <span class="text-sm font-medium text-blue-300">Video Pipeline System</span>
+      </div>
+      <h1 class="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+        Guía Completa del Sistema
+      </h1>
+      <p class="text-lg text-gray-400 max-w-2xl mx-auto">
+        Arquitectura, librerías, workflow completo y comunicación con OpenCode
+      </p>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div x-data="{ activeTab: 'libs' }" class="mb-8">
+      <div class="flex flex-wrap justify-center gap-2 mb-8">
+        <button @click="activeTab = 'libs'" :class="activeTab === 'libs' ? 'tab-active' : 'tab-inactive'" class="px-6 py-3 rounded-lg font-medium transition-all flex items-center gap-2">
+          <i data-lucide="package" class="w-4 h-4"></i> Librerías
+        </button>
+        <button @click="activeTab = 'workflow'" :class="activeTab === 'workflow' ? 'tab-active' : 'tab-inactive'" class="px-6 py-3 rounded-lg font-medium transition-all flex items-center gap-2">
+          <i data-lucide="git-branch" class="w-4 h-4"></i> Workflow
+        </button>
+        <button @click="activeTab = 'opencode'" :class="activeTab === 'opencode' ? 'tab-active' : 'tab-inactive'" class="px-6 py-3 rounded-lg font-medium transition-all flex items-center gap-2">
+          <i data-lucide="code-2" class="w-4 h-4"></i> OpenCode
+        </button>
+        <button @click="activeTab = 'architecture'" :class="activeTab === 'architecture' ? 'tab-active' : 'tab-inactive'" class="px-6 py-3 rounded-lg font-medium transition-all flex items-center gap-2">
+          <i data-lucide="layers" class="w-4 h-4"></i> Arquitectura
+        </button>
+      </div>
+
+      <!-- Tab: Librerías -->
+      <div x-show="activeTab === 'libs'" class="space-y-6" x-transition>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Core -->
+          <div class="card-hover bg-slate-800/60 p-6 rounded-xl border border-slate-700">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                <i data-lucide="server" class="w-5 h-5 text-white"></i>
+              </div>
+              <h3 class="font-semibold text-lg">Core Backend</h3>
+            </div>
+            <ul class="space-y-2 text-sm text-gray-300">
+              <li class="flex items-center gap-2"><span class="text-green-400">●</span> Express.js - API REST</li>
+              <li class="flex items-center gap-2"><span class="text-green-400">●</span> TypeScript - Tipado</li>
+              <li class="flex items-center gap-2"><span class="text-green-400">●</span> SQLite - Base de datos</li>
+              <li class="flex items-center gap-2"><span class="text-green-400">●</span> YAML - Configuración</li>
+            </ul>
+          </div>
+
+          <!-- AI Integration -->
+          <div class="card-hover bg-slate-800/60 p-6 rounded-xl border border-slate-700">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
+                <i data-lucide="brain" class="w-5 h-5 text-white"></i>
+              </div>
+              <h3 class="font-semibold text-lg">Integración AI</h3>
+            </div>
+            <ul class="space-y-2 text-sm text-gray-300">
+              <li class="flex items-center gap-2"><span class="text-purple-400">●</span> ACP SDK - OpenCode</li>
+              <li class="flex items-center gap-2"><span class="text-purple-400">●</span> Claude API - Anthropic</li>
+              <li class="flex items-center gap-2"><span class="text-purple-400">●</span> MiniMax API - Video</li>
+              <li class="flex items-center gap-2"><span class="text-purple-400">●</span> EventSource - SSE</li>
+            </ul>
+          </div>
+
+          <!-- Video -->
+          <div class="card-hover bg-slate-800/60 p-6 rounded-xl border border-slate-700">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
+                <i data-lucide="film" class="w-5 h-5 text-white"></i>
+              </div>
+              <h3 class="font-semibold text-lg">Video Processing</h3>
+            </div>
+            <ul class="space-y-2 text-sm text-gray-300">
+              <li class="flex items-center gap-2"><span class="text-red-400">●</span> Remotion - Composición</li>
+              <li class="flex items-center gap-2"><span class="text-red-400">●</span> FFmpeg - Encoding</li>
+              <li class="flex items-center gap-2"><span class="text-red-400">●</span> @remotion/player - Preview</li>
+              <li class="flex items-center gap-2"><span class="text-red-400">●</span> @remotion/renderer - Export</li>
+            </ul>
+          </div>
+
+          <!-- Frontend -->
+          <div class="card-hover bg-slate-800/60 p-6 rounded-xl border border-slate-700">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 bg-cyan-600 rounded-lg flex items-center justify-center">
+                <i data-lucide="monitor" class="w-5 h-5 text-white"></i>
+              </div>
+              <h3 class="font-semibold text-lg">Frontend</h3>
+            </div>
+            <ul class="space-y-2 text-sm text-gray-300">
+              <li class="flex items-center gap-2"><span class="text-cyan-400">●</span> React 18 - UI Framework</li>
+              <li class="flex items-center gap-2"><span class="text-cyan-400">●</span> TypeScript - Tipado</li>
+              <li class="flex items-center gap-2"><span class="text-cyan-400">●</span> Tailwind CSS - Estilos</li>
+              <li class="flex items-center gap-2"><span class="text-cyan-400">●</span> Lucide Icons - Iconos</li>
+            </ul>
+          </div>
+
+          <!-- Utils -->
+          <div class="card-hover bg-slate-800/60 p-6 rounded-xl border border-slate-700">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
+                <i data-lucide="tool" class="w-5 h-5 text-white"></i>
+              </div>
+              <h3 class="font-semibold text-lg">Utilidades</h3>
+            </div>
+            <ul class="space-y-2 text-sm text-gray-300">
+              <li class="flex items-center gap-2"><span class="text-orange-400">●</span> Zod - Validación</li>
+              <li class="flex items-center gap-2"><span class="text-orange-400">●</span> uuid - Generación IDs</li>
+              <li class="flex items-center gap-2"><span class="text-orange-400">●</span> glob - File patterns</li>
+              <li class="flex items-center gap-2"><span class="text-orange-400">●</span> js-yaml - Parser YAML</li>
+            </ul>
+          </div>
+
+          <!-- Dev Tools -->
+          <div class="card-hover bg-slate-800/60 p-6 rounded-xl border border-slate-700">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+                <i data-lucide="terminal" class="w-5 h-5 text-white"></i>
+              </div>
+              <h3 class="font-semibold text-lg">Dev Tools</h3>
+            </div>
+            <ul class="space-y-2 text-sm text-gray-300">
+              <li class="flex items-center gap-2"><span class="text-green-400">●</span> Vite - Build tool</li>
+              <li class="flex items-center gap-2"><span class="text-green-400">●</span> nodemon - Hot reload</li>
+              <li class="flex items-center gap-2"><span class="text-green-400">●</span> concurrently - Multi-run</li>
+              <li class="flex items-center gap-2"><span class="text-green-400">●</span> dotenv - Variables</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Tech Stack Diagram -->
+        <div class="bg-slate-800/40 p-6 rounded-xl border border-slate-700 mt-8">
+          <h3 class="text-xl font-semibold mb-6 flex items-center gap-2">
+            <i data-lucide="workflow" class="w-5 h-5 text-blue-400"></i>
+            Stack Tecnológico - Vista de Capas
+          </h3>
+          <div class="overflow-x-auto">
+            <svg viewBox="0 0 900 500" class="w-full h-auto min-w-[700px]">
+              <!-- Definitions -->
+              <defs>
+                <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                  <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+                </marker>
+                <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.3" />
+                  <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:0.1" />
+                </linearGradient>
+              </defs>
+
+              <!-- Frontend Layer -->
+              <rect x="50" y="30" width="800" height="90" rx="12" fill="url(#grad1)" stroke="#3b82f6" stroke-width="2"/>
+              <text x="450" y="60" text-anchor="middle" fill="#60a5fa" font-size="16" font-weight="600">Frontend Layer</text>
+              <g transform="translate(100, 80)">
+                <rect x="0" y="0" width="100" height="30" rx="6" fill="#0891b2"/>
+                <text x="50" y="20" text-anchor="middle" fill="white" font-size="12">React + TS</text>
+              </g>
+              <g transform="translate(230, 80)">
+                <rect x="0" y="0" width="100" height="30" rx="6" fill="#0891b2"/>
+                <text x="50" y="20" text-anchor="middle" fill="white" font-size="12">Remotion</text>
+              </g>
+              <g transform="translate(360, 80)">
+                <rect x="0" y="0" width="100" height="30" rx="6" fill="#0891b2"/>
+                <text x="50" y="20" text-anchor="middle" fill="white" font-size="12">Tailwind</text>
+              </g>
+              <g transform="translate(490, 80)">
+                <rect x="0" y="0" width="100" height="30" rx="6" fill="#0891b2"/>
+                <text x="50" y="20" text-anchor="middle" fill="white" font-size="12">Vite</text>
+              </g>
+
+              <!-- API Layer -->
+              <rect x="50" y="140" width="800" height="90" rx="12" fill="url(#grad1)" stroke="#22c55e" stroke-width="2"/>
+              <text x="450" y="170" text-anchor="middle" fill="#4ade80" font-size="16" font-weight="600">API Layer</text>
+              <g transform="translate(100, 190)">
+                <rect x="0" y="0" width="100" height="30" rx="6" fill="#16a34a"/>
+                <text x="50" y="20" text-anchor="middle" fill="white" font-size="12">Express</text>
+              </g>
+              <g transform="translate(230, 190)">
+                <rect x="0" y="0" width="100" height="30" rx="6" fill="#16a34a"/>
+                <text x="50" y="20" text-anchor="middle" fill="white" font-size="12">OpenCode</text>
+              </g>
+              <g transform="translate(360, 190)">
+                <rect x="0" y="0" width="100" height="30" rx="6" fill="#16a34a"/>
+                <text x="50" y="20" text-anchor="middle" fill="white" font-size="12">MiniMax</text>
+              </g>
+              <g transform="translate(490, 190)">
+                <rect x="0" y="0" width="100" height="30" rx="6" fill="#16a34a"/>
+                <text x="50" y="20" text-anchor="middle" fill="white" font-size="12">SSE Events</text>
+              </g>
+
+              <!-- Data Layer -->
+              <rect x="50" y="250" width="800" height="90" rx="12" fill="url(#grad1)" stroke="#a855f7" stroke-width="2"/>
+              <text x="450" y="280" text-anchor="middle" fill="#c084fc" font-size="16" font-weight="600">Data Layer</text>
+              <g transform="translate(100, 300)">
+                <rect x="0" y="0" width="100" height="30" rx="6" fill="#9333ea"/>
+                <text x="50" y="20" text-anchor="middle" fill="white" font-size="12">SQLite</text>
+              </g>
+              <g transform="translate(230, 300)">
+                <rect x="0" y="0" width="100" height="30" rx="6" fill="#9333ea"/>
+                <text x="50" y="20" text-anchor="middle" fill="white" font-size="12">Filesystem</text>
+              </g>
+              <g transform="translate(360, 300)">
+                <rect x="0" y="0" width="100" height="30" rx="6" fill="#9333ea"/>
+                <text x="50" y="20" text-anchor="middle" fill="white" font-size="12">YAML Config</text>
+              </g>
+              <g transform="translate(490, 300)">
+                <rect x="0" y="0" width="100" height="30" rx="6" fill="#9333ea"/>
+                <text x="50" y="20" text-anchor="middle" fill="white" font-size="12">Zod Schema</text>
+              </g>
+
+              <!-- External Services -->
+              <rect x="50" y="360" width="800" height="90" rx="12" fill="url(#grad1)" stroke="#f59e0b" stroke-width="2"/>
+              <text x="450" y="390" text-anchor="middle" fill="#fbbf24" font-size="16" font-weight="600">External Services</text>
+              <g transform="translate(100, 410)">
+                <rect x="0" y="0" width="100" height="30" rx="6" fill="#d97706"/>
+                <text x="50" y="20" text-anchor="middle" fill="white" font-size="12">Anthropic</text>
+              </g>
+              <g transform="translate(230, 410)">
+                <rect x="0" y="0" width="100" height="30" rx="6" fill="#d97706"/>
+                <text x="50" y="20" text-anchor="middle" fill="white" font-size="12">MiniMax AI</text>
+              </g>
+              <g transform="translate(360, 410)">
+                <rect x="0" y="0" width="100" height="30" rx="6" fill="#d97706"/>
+                <text x="50" y="20" text-anchor="middle" fill="white" font-size="12">OpenAI</text>
+              </g>
+
+              <!-- Arrows -->
+              <line x1="450" y1="120" x2="450" y2="140" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+              <line x1="450" y1="230" x2="450" y2="250" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+              <line x1="450" y1="340" x2="450" y2="360" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Workflow -->
+      <div x-show="activeTab === 'workflow'" class="space-y-6" x-transition>
+        <!-- Workflow Steps -->
+        <div class="bg-slate-800/40 p-6 rounded-xl border border-slate-700">
+          <h3 class="text-xl font-semibold mb-6 flex items-center gap-2">
+            <i data-lucide="git-branch" class="w-5 h-5 text-blue-400"></i>
+            Workflow Completo - De Proyecto a Video
+          </h3>
+
+          <!-- Step 1 -->
+          <div class="flex gap-4 mb-6">
+            <div class="flex flex-col items-center">
+              <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center font-bold text-lg">1</div>
+              <div class="w-0.5 h-full bg-blue-600/50 my-2"></div>
+            </div>
+            <div class="flex-1 pb-6">
+              <h4 class="text-lg font-semibold text-blue-400 mb-2">Creación de Proyecto</h4>
+              <p class="text-gray-400 mb-3">El usuario crea un proyecto que define el contexto base para OpenCode.</p>
+              <div class="code-block">
+                <pre><code class="language-typescript">// POST /api/projects
+{
+  "name": "Promoción Mayo 2024",
+  "description": "Campaña de membresías",
+  "contextPath": "./content/promo-mayo"
+}</code></pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="flex gap-4 mb-6">
+            <div class="flex flex-col items-center">
+              <div class="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center font-bold text-lg">2</div>
+              <div class="w-0.5 h-full bg-purple-600/50 my-2"></div>
+            </div>
+            <div class="flex-1 pb-6">
+              <h4 class="text-lg font-semibold text-purple-400 mb-2">Creación de Video</h4>
+              <p class="text-gray-400 mb-3">Se crea un video dentro del proyecto con un prompt inicial.</p>
+              <div class="code-block">
+                <pre><code class="language-typescript">// POST /api/projects/:id/videos
+{
+  "prompt": "Video promocional de membresías",
+  "context": {
+    "theme": "fitness",
+    "objective": "conversion",
+    "visualStyle": { "mood": "energetic" }
+  }
+}</code></pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="flex gap-4 mb-6">
+            <div class="flex flex-col items-center">
+              <div class="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center font-bold text-lg">3</div>
+              <div class="w-0.5 h-full bg-green-600/50 my-2"></div>
+            </div>
+            <div class="flex-1 pb-6">
+              <h4 class="text-lg font-semibold text-green-400 mb-2">Generación de Idea (OpenCode)</h4>
+              <p class="text-gray-400 mb-3">OpenCode analiza el contexto y genera una idea completa con escenas.</p>
+              <div class="grid md:grid-cols-2 gap-4">
+                <div class="code-block">
+                  <pre><code class="language-typescript">// Contexto mergeado
+const context = {
+  project: { name, contextPath },
+  video: { theme, objective, visualStyle },
+  files: await loadContextFiles(project.contextPath)
+};
+
+// Prompt a OpenCode
+await openCode.sendPrompt(sessionId,
+  `Genera idea para: ${video.prompt}`,
+  { taskType: 'idea' }
+);</code></pre>
+                </div>
+                <div class="code-block">
+                  <pre><code class="language-json">// Respuesta esperada
+{
+  "title": "Transforma tu Vida",
+  "description": "Video motivacional",
+  "scenes": [
+    {
+      "sequence": 0,
+      "description": "Hook inicial",
+      "duration": 6,
+      "prompt": "Atleta corriendo..."
+    }
+  ]
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="flex gap-4 mb-6">
+            <div class="flex flex-col items-center">
+              <div class="w-12 h-12 bg-cyan-600 rounded-full flex items-center justify-center font-bold text-lg">4</div>
+              <div class="w-0.5 h-full bg-cyan-600/50 my-2"></div>
+            </div>
+            <div class="flex-1 pb-6">
+              <h4 class="text-lg font-semibold text-cyan-400 mb-2">Edición Remotion (Live)</h4>
+              <p class="text-gray-400 mb-3">El agente genera código React/Remotion para cada escena. El preview se actualiza en tiempo real.</p>
+              <div class="code-block">
+                <pre><code class="language-typescript">// Para cada escena
+for (const scene of video.idea.scenes) {
+  const code = await openCode.generateSceneCode({
+    scene,
+    context: mergedContext,
+    taskType: 'code'
+  });
+  await saveSceneCode(scene.id, code);
+
+  // Notificar UI
+  sseEmitter.emit(`video:${video.id}`, {
+    type: 'code_updated',
+    sceneId: scene.id
+  });
+}</code></pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 5 -->
+          <div class="flex gap-4 mb-6">
+            <div class="flex flex-col items-center">
+              <div class="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center font-bold text-lg">5</div>
+              <div class="w-0.5 h-full bg-orange-600/50 my-2"></div>
+            </div>
+            <div class="flex-1 pb-6">
+              <h4 class="text-lg font-semibold text-orange-400 mb-2">Generación de Clips (MiniMax)</h4>
+              <p class="text-gray-400 mb-3">MiniMax genera video para cada escena. Control granular: cancel, regenerate, pause.</p>
+              <div class="grid md:grid-cols-2 gap-4">
+                <div class="code-block">
+                  <pre><code class="language-typescript">// POST /api/scenes/:id/generate
+{
+  "prompt": "Atleta haciendo sentadillas...",
+  "params": {
+    "model": "T2V-01-Director",
+    "cameraControl": {
+      "type": "zoom_in",
+      "speed": "slow"
+    },
+    "quality": "high"
+  }
+}</code></pre>
+                </div>
+                <div class="code-block">
+                  <pre><code class="language-typescript">// SSE Progress Events
+data: {"type": "queued", "sceneId": "s1"}
+data: {"type": "started", "sceneId": "s1"}
+data: {"type": "progress", "data": {"percentage": 45}}
+data: {"type": "completed", "data": {"downloadUrl": "..."}}</code></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 6 -->
+          <div class="flex gap-4">
+            <div class="flex flex-col items-center">
+              <div class="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center font-bold text-lg">6</div>
+            </div>
+            <div class="flex-1">
+              <h4 class="text-lg font-semibold text-red-400 mb-2">Composición y Export</h4>
+              <p class="text-gray-400 mb-3">Remotion compone los clips en video final con overlays y transiciones.</p>
+              <div class="code-block">
+                <pre><code class="language-typescript">// Composición final
+const outputPath = await remotionRenderer.render({
+  videoId: video.id,
+  scenes: video.scenes,
+  composition: VideoComposition,
+  codec: 'h264',
+  output: `./output/${video.id}.mp4`
+});</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- State Machine Diagram -->
+        <div class="bg-slate-800/40 p-6 rounded-xl border border-slate-700">
+          <h3 class="text-xl font-semibold mb-6 flex items-center gap-2">
+            <i data-lucide="activity" class="w-5 h-5 text-blue-400"></i>
+            State Machine - Video Pipeline
+          </h3>
+          <div class="overflow-x-auto">
+            <svg viewBox="0 0 1000 400" class="w-full h-auto min-w-[800px]">
+              <!-- States -->
+              <g transform="translate(50, 50)">
+                <rect x="0" y="0" width="120" height="50" rx="8" fill="#3b82f6" stroke="#60a5fa" stroke-width="2"/>
+                <text x="60" y="30" text-anchor="middle" fill="white" font-size="12" font-weight="600">draft</text>
+              </g>
+
+              <g transform="translate(200, 50)">
+                <rect x="0" y="0" width="120" height="50" rx="8" fill="#8b5cf6" stroke="#a78bfa" stroke-width="2"/>
+                <text x="60" y="30" text-anchor="middle" fill="white" font-size="12" font-weight="600">generating_idea</text>
+              </g>
+
+              <g transform="translate(350, 50)">
+                <rect x="0" y="0" width="120" height="50" rx="8" fill="#10b981" stroke="#34d399" stroke-width="2"/>
+                <text x="60" y="30" text-anchor="middle" fill="white" font-size="12" font-weight="600">idea_ready</text>
+              </g>
+
+              <g transform="translate(500, 50)">
+                <rect x="0" y="0" width="120" height="50" rx="8" fill="#06b6d4" stroke="#22d3ee" stroke-width="2"/>
+                <text x="60" y="30" text-anchor="middle" fill="white" font-size="12" font-weight="600">editing_remotion</text>
+              </g>
+
+              <g transform="translate(650, 50)">
+                <rect x="0" y="0" width="120" height="50" rx="8" fill="#f59e0b" stroke="#fbbf24" stroke-width="2"/>
+                <text x="60" y="30" text-anchor="middle" fill="white" font-size="12" font-weight="600">preview_ready</text>
+              </g>
+
+              <g transform="translate(200, 150)">
+                <rect x="0" y="0" width="120" height="50" rx="8" fill="#ec4899" stroke="#f472b6" stroke-width="2"/>
+                <text x="60" y="30" text-anchor="middle" fill="white" font-size="12" font-weight="600">generating_clips</text>
+              </g>
+
+              <g transform="translate(350, 150)">
+                <rect x="0" y="0" width="120" height="50" rx="8" fill="#84cc16" stroke="#a3e635" stroke-width="2"/>
+                <text x="60" y="30" text-anchor="middle" fill="white" font-size="12" font-weight="600">clips_ready</text>
+              </g>
+
+              <g transform="translate(500, 150)">
+                <rect x="0" y="0" width="120" height="50" rx="8" fill="#6366f1" stroke="#818cf8" stroke-width="2"/>
+                <text x="60" y="30" text-anchor="middle" fill="white" font-size="12" font-weight="600">composing</text>
+              </g>
+
+              <g transform="translate(650, 150)">
+                <rect x="0" y="0" width="120" height="50" rx="8" fill="#22c55e" stroke="#4ade80" stroke-width="2"/>
+                <text x="60" y="30" text-anchor="middle" fill="white" font-size="12" font-weight="600">completed</text>
+              </g>
+
+              <g transform="translate(800, 100)">
+                <rect x="0" y="0" width="100" height="50" rx="8" fill="#ef4444" stroke="#f87171" stroke-width="2"/>
+                <text x="50" y="30" text-anchor="middle" fill="white" font-size="12" font-weight="600">failed</text>
+              </g>
+
+              <!-- Arrows -->
+              <defs>
+                <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                  <polygon points="0 0, 8 3, 0 6" fill="#64748b"/>
+                </marker>
+              </defs>
+
+              <line x1="170" y1="75" x2="200" y2="75" stroke="#64748b" stroke-width="2" marker-end="url(#arr)"/>
+              <line x1="320" y1="75" x2="350" y2="75" stroke="#64748b" stroke-width="2" marker-end="url(#arr)"/>
+              <line x1="470" y1="75" x2="500" y2="75" stroke="#64748b" stroke-width="2" marker-end="url(#arr)"/>
+              <line x1="620" y1="75" x2="650" y2="75" stroke="#64748b" stroke-width="2" marker-end="url(#arr)"/>
+              <line x1="710" y1="100" x2="260" y2="150" stroke="#64748b" stroke-width="2" marker-end="url(#arr)"/>
+              <line x1="320" y1="175" x2="350" y2="175" stroke="#64748b" stroke-width="2" marker-end="url(#arr)"/>
+              <line x1="470" y1="175" x2="500" y2="175" stroke="#64748b" stroke-width="2" marker-end="url(#arr)"/>
+              <line x1="620" y1="175" x2="650" y2="175" stroke="#64748b" stroke-width="2" marker-end="url(#arr)"/>
+
+              <!-- Failed arrows -->
+              <line x1="260" y1="50" x2="800" y2="100" stroke="#ef4444" stroke-width="1" stroke-dasharray="4"/>
+              <line x1="560" y1="50" x2="800" y2="100" stroke="#ef4444" stroke-width="1" stroke-dasharray="4"/>
+              <line x1="260" y1="150" x2="800" y2="150" stroke="#ef4444" stroke-width="1" stroke-dasharray="4"/>
+              <line x1="560" y1="150" x2="800" y2="150" stroke="#ef4444" stroke-width="1" stroke-dasharray="4"/>
+            </svg>
+          </div>
+          <div class="mt-4 flex flex-wrap gap-4 text-sm text-gray-400">
+            <div class="flex items-center gap-2"><span class="w-3 h-3 bg-blue-500 rounded"></span> Inicio</div>
+            <div class="flex items-center gap-2"><span class="w-3 h-3 bg-purple-500 rounded"></span> OpenCode</div>
+            <div class="flex items-center gap-2"><span class="w-3 h-3 bg-cyan-500 rounded"></span> Remotion</div>
+            <div class="flex items-center gap-2"><span class="w-3 h-3 bg-pink-500 rounded"></span> MiniMax</div>
+            <div class="flex items-center gap-2"><span class="w-3 h-3 bg-green-500 rounded"></span> Completado</div>
+            <div class="flex items-center gap-2"><span class="w-3 h-3 bg-red-500 rounded"></span> Error</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: OpenCode -->
+      <div x-show="activeTab === 'opencode'" class="space-y-6" x-transition>
+        <!-- ACP Communication -->
+        <div class="bg-slate-800/40 p-6 rounded-xl border border-slate-700">
+          <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+            <i data-lucide="message-square" class="w-5 h-5 text-purple-400"></i>
+            Comunicación con OpenCode vía ACP
+          </h3>
+          <p class="text-gray-400 mb-6">Agent Client Protocol (ACP) permite comunicación bidireccional con OpenCode mediante stdin/stdout.</p>
+
+          <div class="space-y-4">
+            <!-- Bridge Class -->
+            <div>
+              <h4 class="text-lg font-medium text-purple-400 mb-2">OpenCodeBridge - Clase Principal</h4>
+              <div class="code-block">
+                <pre><code class="language-typescript">import { AcpClient } from '@agentclientprotocol/sdk';
+import { EventEmitter } from 'events';
+import { spawn } from 'child_process';
+
+export class OpenCodeBridge extends EventEmitter {
+  private clients: Map<string, AcpClient> = new Map();
+  private processes: Map<string, any> = new Map();
+
+  async createSession(sessionId: string, cwd: string): Promise<void> {
+    // Spawn opencode en modo ACP
+    const process = spawn('opencode', ['acp'], {
+      cwd,
+      env: { OPENCODE_API_KEY: process.env.OPENCODE_API_KEY }
+    });
+
+    this.processes.set(sessionId, process);
+
+    // Crear cliente ACP
+    const client = new AcpClient({
+      stdin: process.stdin,
+      stdout: process.stdout,
+    });
+
+    this.clients.set(sessionId, client);
+
+    // Escuchar mensajes del agente
+    client.onMessage((message) => {
+      this.handleMessage(sessionId, message);
+    });
+
+    // Initialize session
+    await client.initialize({
+      name: 'video-pipeline-agent',
+      version: '1.0.0',
+    });
+  }
+
+  private handleMessage(sessionId: string, message: Message): void {
+    if (message.role === 'assistant' && message.content) {
+      this.emit('event', {
+        type: 'text',
+        sessionId,
+        data: { role: 'assistant', content: message.content }
+      });
+    }
+
+    if (message.tool_calls) {
+      this.emit('event', {
+        type: 'tool_call',
+        sessionId,
+        data: message.tool_calls[0]
+      });
+    }
+  }
+}</code></pre>
+              </div>
+            </div>
+
+            <!-- Model Selection -->
+            <div>
+              <h4 class="text-lg font-medium text-purple-400 mb-2">Selección de Modelos por Tarea</h4>
+              <div class="code-block">
+                <pre><code class="language-typescript">// Configuración de modelos
+interface OpenCodeModelsConfig {
+  default: ModelConfig;
+  idea_generation: ModelConfig;  // Claude Opus - Creatividad
+  code_generation: ModelConfig;  // Claude Sonnet - Balance
+  editing: ModelConfig;          // Claude Haiku - Velocidad
+  economy?: ModelConfig;         // GPT-4o-mini - Costo
+}
+
+// Uso por tipo de tarea
+async sendPrompt(
+  sessionId: string,
+  prompt: string,
+  options: { taskType?: 'idea' | 'code' | 'editing' | 'economy' }
+): Promise<void> {
+  const modelConfig = this.selectModel(options.taskType);
+
+  // Notificar modelo seleccionado
+  this.emit('event', {
+    type: 'model_selected',
+    data: {
+      provider: modelConfig.provider,
+      model: modelConfig.model,
+      taskType: options.taskType
+    }
+  });
+
+  await client.sendMessage({
+    role: 'user',
+    content: prompt,
+    model_params: {
+      model: modelConfig.model,
+      temperature: modelConfig.temperature,
+      max_tokens: modelConfig.max_tokens,
+      system_prompt: modelConfig.system_prompt
+    }
+  });
+}</code></pre>
+              </div>
+            </div>
+
+            <!-- React Hook -->
+            <div>
+              <h4 class="text-lg font-medium text-purple-400 mb-2">React Hook - useOpenCode</h4>
+              <div class="code-block">
+                <pre><code class="language-typescript">export function useOpenCode(options: UseOpenCodeOptions = {}) {
+  const [isConnected, setIsConnected] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const eventSourceRef = useRef<EventSource | null>(null);
+
+  const sendCommand = useCallback(async ({
+    prompt,
+    contextPath,
+    taskType
+  }: {
+    prompt: string;
+    contextPath?: string;
+    taskType?: 'idea' | 'code' | 'editing';
+  }) => {
+    const response = await fetch('/api/command', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt, contextPath, taskType })
+    });
+
+    const result = await response.json();
+    setSessionId(result.sessionId);
+    connectSSE(result.sessionId);
+  }, []);
+
+  const connectSSE = useCallback((sid: string) => {
+    const es = new EventSource(`/events/${sid}`);
+    eventSourceRef.current = es;
+
+    es.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      switch (data.type) {
+        case 'text':
+          options.onText?.(data.data.content);
+          break;
+        case 'tool_call':
+          options.onToolCall?.(data.data);
+          break;
+        case 'model_selected':
+          console.log('Using model:', data.data.model);
+          break;
+      }
+    };
+  }, []);
+
+  return { sendCommand, isConnected, sessionId };
+}</code></pre>
+              </div>
+            </div>
+
+            <!-- API Routes -->
+            <div>
+              <h4 class="text-lg font-medium text-purple-400 mb-2">API Routes - Express</h4>
+              <div class="code-block">
+                <pre><code class="language-typescript">// POST /api/command - Iniciar sesión
+router.post('/', async (req, res) => {
+  const { prompt, contextPath, taskType } = req.body;
+  const sessionId = uuidv4();
+
+  await bridge.createSession(sessionId, contextPath || process.cwd());
+
+  await bridge.sendPrompt(sessionId, prompt, {
+    taskType,  // 'idea' | 'code' | 'editing'
+    context: { projectPath: contextPath }
+  });
+
+  res.json({
+    sessionId,
+    status: 'started',
+    message: 'Command sent to OpenCode. Listen to SSE for events.'
+  });
+});
+
+// GET /events/:sessionId - SSE Stream
+router.get('/:sessionId', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+
+  const onEvent = (event: OpenCodeEvent) => {
+    res.write(`data: ${JSON.stringify(event)}\n\n`);
+  };
+
+  bridge.on('event', onEvent);
+
+  req.on('close', () => {
+    bridge.off('event', onEvent);
+  });
+});</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Event Types -->
+        <div class="bg-slate-800/40 p-6 rounded-xl border border-slate-700">
+          <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+            <i data-lucide="radio" class="w-5 h-5 text-green-400"></i>
+            Tipos de Eventos SSE
+          </h3>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <div class="flex items-center gap-3 p-3 bg-slate-700/50 rounded-lg">
+                <span class="px-2 py-1 bg-blue-600 rounded text-xs font-mono">connected</span>
+                <span class="text-sm text-gray-300">Conexión establecida</span>
+              </div>
+              <div class="flex items-center gap-3 p-3 bg-slate-700/50 rounded-lg">
+                <span class="px-2 py-1 bg-purple-600 rounded text-xs font-mono">text</span>
+                <span class="text-sm text-gray-300">Texto del asistente</span>
+              </div>
+              <div class="flex items-center gap-3 p-3 bg-slate-700/50 rounded-lg">
+                <span class="px-2 py-1 bg-orange-600 rounded text-xs font-mono">tool_call</span>
+                <span class="text-sm text-gray-300">Llamada a herramienta</span>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <div class="flex items-center gap-3 p-3 bg-slate-700/50 rounded-lg">
+                <span class="px-2 py-1 bg-green-600 rounded text-xs font-mono">tool_result</span>
+                <span class="text-sm text-gray-300">Resultado de tool</span>
+              </div>
+              <div class="flex items-center gap-3 p-3 bg-slate-700/50 rounded-lg">
+                <span class="px-2 py-1 bg-cyan-600 rounded text-xs font-mono">model_selected</span>
+                <span class="text-sm text-gray-300">Modelo seleccionado</span>
+              </div>
+              <div class="flex items-center gap-3 p-3 bg-slate-700/50 rounded-lg">
+                <span class="px-2 py-1 bg-red-600 rounded text-xs font-mono">done/error</span>
+                <span class="text-sm text-gray-300">Completado/Error</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Architecture -->
+      <div x-show="activeTab === 'architecture'" class="space-y-6" x-transition>
+        <!-- Hierarchical Context -->
+        <div class="bg-slate-800/40 p-6 rounded-xl border border-slate-700">
+          <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+            <i data-lucide="layers" class="w-5 h-5 text-blue-400"></i>
+            Contexto Jerárquico - 3 Niveles
+          </h3>
+          <p class="text-gray-400 mb-6">El sistema usa un contexto jerárquico que se mergea para construir prompts enriquecidos para OpenCode.</p>
+
+          <div class="overflow-x-auto mb-6">
+            <svg viewBox="0 0 800 300" class="w-full h-auto min-w-[600px]">
+              <!-- Level 1: Project -->
+              <g transform="translate(50, 30)">
+                <rect x="0" y="0" width="700" height="70" rx="12" fill="#1e3a5f" stroke="#3b82f6" stroke-width="2"/>
+                <text x="20" y="25" fill="#60a5fa" font-size="14" font-weight="600">Level 1: Project</text>
+                <text x="20" y="50" fill="#94a3b8" font-size="12">name • contextPath • config (defaultDuration, resolution)</text>
+                <circle cx="650" cy="35" r="15" fill="#3b82f6"/>
+                <text x="650" y="40" text-anchor="middle" fill="white" font-size="12">1</text>
+              </g>
+
+              <!-- Level 2: Video -->
+              <g transform="translate(100, 120)">
+                <rect x="0" y="0" width="600" height="70" rx="12" fill="#312e81" stroke="#8b5cf6" stroke-width="2"/>
+                <text x="20" y="25" fill="#a78bfa" font-size="14" font-weight="600">Level 2: Video</text>
+                <text x="20" y="50" fill="#94a3b8" font-size="12">theme • objective • visualStyle • targetAudience</text>
+                <circle cx="550" cy="35" r="15" fill="#8b5cf6"/>
+                <text x="550" y="40" text-anchor="middle" fill="white" font-size="12">2</text>
+              </g>
+
+              <!-- Level 3: Scene -->
+              <g transform="translate(150, 210)">
+                <rect x="0" y="0" width="500" height="70" rx="12" fill="#164e63" stroke="#06b6d4" stroke-width="2"/>
+                <text x="20" y="25" fill="#22d3ee" font-size="14" font-weight="600">Level 3: Scene</text>
+                <text x="20" y="50" fill="#94a3b8" font-size="12">action • visualElements • textOverlay • emotion</text>
+                <circle cx="450" cy="35" r="15" fill="#06b6d4"/>
+                <text x="450" y="40" text-anchor="middle" fill="white" font-size="12">3</text>
+              </g>
+
+              <!-- Arrows -->
+              <defs>
+                <marker id="arr2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                  <polygon points="0 0, 8 3, 0 6" fill="#64748b"/>
+                </marker>
+              </defs>
+              <line x1="400" y1="100" x2="400" y2="120" stroke="#64748b" stroke-width="2" marker-end="url(#arr2)"/>
+              <line x1="400" y1="190" x2="400" y2="210" stroke="#64748b" stroke-width="2" marker-end="url(#arr2)"/>
+            </svg>
+          </div>
+
+          <div class="code-block">
+            <pre><code class="language-typescript">// Merge de contexto para prompts
+async function buildMergedContext(
+  project: Project,
+  video: Video,
+  scene?: Scene
+): Promise<MergedContext> {
+  return {
+    project: {
+      name: project.name,
+      contextFiles: await loadContextFiles(project.contextPath),
+    },
+    video: video.context || {},
+    scene: scene?.context || {},
+    idea: video.idea,
+  };
+}
+
+// Uso en generación
+const context = await buildMergedContext(project, video, scene);
+const prompt = `Genera código para: ${scene.description}
+Contexto del proyecto: ${context.project.name}
+Tema: ${context.video.theme}
+Emoción objetivo: ${context.scene.emotion}`;</code></pre>
+          </div>
+        </div>
+
+        <!-- MiniMax Control -->
+        <div class="bg-slate-800/40 p-6 rounded-xl border border-slate-700">
+          <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+            <i data-lucide="video" class="w-5 h-5 text-orange-400"></i>
+            Control MiniMax Avanzado
+          </h3>
+
+          <div class="grid md:grid-cols-2 gap-4 mb-6">
+            <div class="code-block">
+              <pre><code class="language-typescript">// Parámetros de generación
+interface MiniMaxGenerationParams {
+  model: 'T2V-01-Director' | 'T2V-01';
+  duration: 6 | 8 | 10;
+  resolution: '720p' | '1080p';
+
+  cameraControl?: {
+    type: 'static' | 'pan' | 'zoom_in' | 'zoom_out';
+    speed?: 'slow' | 'normal' | 'fast';
+  };
+
+  visualStyle?: {
+    cinematic?: boolean;
+    lighting?: 'natural' | 'studio' | 'dramatic';
+    colorGrade?: 'warm' | 'cool' | 'vibrant';
+  };
+
+  quality?: 'draft' | 'standard' | 'high' | 'ultra';
+  seed?: number;
+}</code></pre>
+            </div>
+            <div class="code-block">
+              <pre><code class="language-typescript">// API Endpoints
+POST /api/scenes/:id/generate
+POST /api/scenes/:id/cancel
+POST /api/scenes/:id/regenerate
+GET  /api/scenes/:id/status
+POST /api/videos/:id/generate-all
+POST /api/videos/:id/pause
+POST /api/videos/:id/resume
+
+// SSE Events
+GET /api/scenes/:id/events</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- Remotion Hot Reload -->
+        <div class="bg-slate-800/40 p-6 rounded-xl border border-slate-700">
+          <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+            <i data-lucide="refresh-cw" class="w-5 h-5 text-cyan-400"></i>
+            Remotion Hot Reload
+          </h3>
+
+          <div class="code-block">
+            <pre><code class="language-typescript">// Hook para recarga automática
+export function useRemotionReload({
+  videoId,
+  apiUrl = 'http://localhost:3000',
+  onCodeUpdate
+}: UseRemotionReloadOptions) {
+  const [reloadKey, setReloadKey] = useState(0);
+
+  useEffect(() => {
+    const es = new EventSource(`${apiUrl}/api/videos/${videoId}/events`);
+
+    es.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.type === 'code_updated') {
+        setReloadKey(k => k + 1);  // Force re-mount
+        onCodeUpdate?.();
+      }
+    };
+
+    return () => es.close();
+  }, [videoId]);
+
+  return { reloadKey, forceReload: () => setReloadKey(k => k + 1) };
+}
+
+// Uso en componente
+function VideoPreview({ videoId }: { videoId: string }) {
+  const { reloadKey } = useRemotionReload({ videoId });
+
+  return (
+    <Player
+      key={reloadKey}  // Re-mount cuando cambia
+      component={VideoComposition}
+      durationInFrames={900}
+      fps={30}
+      compositionWidth={1080}
+      compositionHeight={1920}
+      inputProps={{ videoId }}
+      controls
+      autoPlay
+    />
+  );
+}</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-12 text-center text-gray-500 text-sm">
+      <p>Video Pipeline System - Documentación Generada</p>
+      <p class="mt-1">Stack: React + TypeScript + Express + OpenCode + MiniMax + Remotion</p>
+    </footer>
+  </div>
+
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

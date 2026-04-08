@@ -1,0 +1,107 @@
+{
+  "plan_name": "docs-improvement",
+  "version": "1.0.0",
+  "created_at": "2024-01-15",
+  "tasks": [
+    {
+      "id": "T1",
+      "name": "Contexto Jerárquico",
+      "file": "tasks/01-hierarchical-context.md",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [],
+      "outputs": [
+        "docs/architecture/hierarchical-context.md",
+        "docs/database/schema.md (mod)",
+        "docs/models/README.md (mod)"
+      ],
+      "requirements": ["FR-001", "FR-002", "NFR-001", "NFR-002"]
+    },
+    {
+      "id": "T2",
+      "name": "Remotion Live Editing",
+      "file": "tasks/02-remotion-live-editing.md",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": ["T1"],
+      "outputs": [
+        "docs/integrations/remotion-code-generation.md",
+        "docs/code-snippets/remotion-hot-reload.md",
+        "docs/architecture/state-machine.md (mod)",
+        "docs/code-snippets/opencode-bridge.md (mod)"
+      ],
+      "requirements": ["FR-003", "FR-004", "FR-007", "NFR-001", "NFR-003"]
+    },
+    {
+      "id": "T3",
+      "name": "Control de Modelos OpenCode",
+      "file": "tasks/03-opencode-model-control.md",
+      "status": "pending",
+      "priority": "medium",
+      "dependencies": ["T1"],
+      "outputs": [
+        "docs/integrations/opencode-advanced.md",
+        "docs/configuration/schema.md (mod)",
+        "docs/code-snippets/opencode-bridge.md (mod)"
+      ],
+      "requirements": ["FR-005", "FR-007", "NFR-001"]
+    },
+    {
+      "id": "T4",
+      "name": "Control MiniMax Avanzado",
+      "file": "tasks/04-minimax-advanced-control.md",
+      "status": "pending",
+      "priority": "medium",
+      "dependencies": [],
+      "outputs": [
+        "docs/integrations/minimax-advanced.md",
+        "docs/reference/api-endpoints.md (mod)"
+      ],
+      "requirements": ["FR-006", "NFR-001", "NFR-003"]
+    },
+    {
+      "id": "T5",
+      "name": "Actualización de Índices",
+      "file": "tasks/05-update-indices.md",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": ["T1", "T2", "T3", "T4"],
+      "outputs": [
+        "docs/index.md (mod)",
+        "docs/README.md (mod)",
+        "docs/architecture/projects.md (mod)",
+        "docs/integrations/opencode.md (mod)",
+        "docs/integrations/minimax.md (mod)"
+      ],
+      "requirements": ["IR-001", "IR-002", "IR-003"]
+    }
+  ],
+  "execution_paths": {
+    "dependency_order": ["T1", "T4", "T2", "T3", "T5"],
+    "parallel_groups": [
+      ["T1", "T4"],
+      ["T2", "T3"]
+    ]
+  },
+  "metrics": {
+    "total_tasks": 5,
+    "new_documents": 7,
+    "modified_documents": 9,
+    "requirements_coverage": {
+      "FR": 7,
+      "NFR": 4,
+      "IR": 3
+    }
+  },
+  "validation": {
+    "pre_execution": [
+      "Verificar que todos los archivos de entrada existen",
+      "Confirmar estructura de directorios docs/"
+    ],
+    "post_execution": [
+      "Todos los links en index.md funcionan",
+      "No hay breaking changes en docs existentes",
+      "Formato consistente en todos los documentos"
+    ]
+  }
+}

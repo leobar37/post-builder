@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Test outputs
+test-export-result.png
+*.log
+
+# System/IDE
+.DS_Store
+.vscode/
+.idea/
+
+# Temporary files
+.claude/
+.playwright-mcp/
+concurrently
+*.tmp
+
+# Generated outputs (kept for examples, but can be regenerated)
+# posts/*.png
+# videos/*.mp4

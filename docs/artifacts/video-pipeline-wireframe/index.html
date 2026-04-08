@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Pipeline - Wireframes UI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .wireframe-box {
+            border: 2px dashed #475569;
+            background: #1e293b;
+        }
+        .screen-container {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-200 min-h-screen">
+    <!-- Header -->
+    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <i data-lucide="layout" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-white">Video Pipeline</h1>
+                        <p class="text-sm text-slate-400">Wireframes UI - Flujo de Usuario</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <!-- Agent Status Indicator (Header) -->
+                    <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-800 rounded-lg border border-slate-700">
+                        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        <span class="text-xs text-slate-300">OpenCode</span>
+                        <span class="text-xs text-green-400">● acp-7f8d9a2e</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="showScreen(0)" class="nav-btn px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium transition-all hover:bg-blue-500">1. Proyectos</button>
+                        <button onclick="showScreen(1)" class="nav-btn px-4 py-2 bg-slate-700 text-slate-300 rounded-lg text-sm font-medium transition-all hover:bg-slate-600">2. Nuevo Video</button>
+                        <button onclick="showScreen(2)" class="nav-btn px-4 py-2 bg-slate-700 text-slate-300 rounded-lg text-sm font-medium transition-all hover:bg-slate-600">3. Generando</button>
+                        <button onclick="showScreen(3)" class="nav-btn px-4 py-2 bg-slate-700 text-slate-300 rounded-lg text-sm font-medium transition-all hover:bg-slate-600">4. Escenas</button>
+                        <button onclick="showScreen(4)" class="nav-btn px-4 py-2 bg-slate-700 text-slate-300 rounded-lg text-sm font-medium transition-all hover:bg-slate-600">5. Editor</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-[1400px] mx-auto px-6 py-8 flex gap-6">
+        <!-- Screens Container -->
+        <div class="flex-1">
+
+        <!-- Screen 1: Project Selection -->
+        <div id="screen-0" class="screen block">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-white mb-2">1. Selector de Proyecto</h2>
+                <p class="text-slate-400">El usuario selecciona o crea un proyecto para organizar sus videos.</p>
+            </div>
+
+            <div class="grid gap-8">
+                <!-- Wireframe -->
+                <div class="screen-container bg-slate-900 rounded-xl overflow-hidden border border-slate-800">
+                    <!-- Top Bar -->
+                    <div class="bg-slate-800 px-6 py-4 flex items-center justify-between border-b border-slate-700">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                                <i data-lucide="video" class="w-4 h-4 text-white"></i>
+                            </div>
+                            <span class="font-semibold text-white">Video Pipeline</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-slate-700"></div>
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-bold text-white">Mis Proyectos</h3>
+                            <button class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium flex items-center gap-2">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                                Nuevo Proyecto
+                            </button>
+                        </div>
+
+                        <!-- Search -->
+                        <div class="relative mb-6">
+                            <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500"></i>
+                            <input type="text" placeholder="Buscar proyectos..." class="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500">
+                        </div>
+
+                        <!-- Project Cards -->
+                        <div class="grid gap-4">
+                            <!-- Active Card -->
+                            <div class="p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl cursor-pointer">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg flex items-center justify-center text-xl">🎯</div>
+                                        <div>
+                                            <h4 class="font-semibold text-white">Promo Mayo 2024</h4>
+                                            <p class="text-sm text-slate-400">contextId: promo-mayo-2024</p>
+                                        </div>
+                                    </div>
+                                    <span class="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded-full">Activo</span>
+                                </div>
+                                <div class="flex items-center gap-4 text-sm text-slate-400">
+                                    <span class="flex items-center gap-1"><i data-lucide="video" class="w-4 h-4"></i> 5 videos</span>
+                                    <span class="flex items-center gap-1"><i data-lucide="check-circle" class="w-4 h-4"></i> 3 completados</span>
+                                    <span class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> hace 2d</span>
+                                </div>
+                            </div>
+
+                            <!-- Normal Cards -->
+                            <div class="p-4 bg-slate-800 border border-slate-700 rounded-xl hover:border-slate-600 cursor-pointer transition-colors">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg flex items-center justify-center text-xl">💬</div>
+                                        <div>
+                                            <h4 class="font-semibold text-white">Testimonios Q2</h4>
+                                            <p class="text-sm text-slate-400">contextId: testimonios-q2</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4 text-sm text-slate-400">
+                                    <span class="flex items-center gap-1"><i data-lucide="video" class="w-4 h-4"></i> 12 videos</span>
+                                    <span class="flex items-center gap-1"><i data-lucide="check-circle" class="w-4 h-4"></i> 8 completados</span>
+                                </div>
+                            </div>
+
+                            <div class="p-4 bg-slate-800 border border-slate-700 rounded-xl hover:border-slate-600 cursor-pointer transition-colors">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-teal-500 rounded-lg flex items-center justify-center text-xl">🎄</div>
+                                        <div>
+                                            <h4 class="font-semibold text-white">Navidad 2024</h4>
+                                            <p class="text-sm text-slate-400">contextId: navidad-2024</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4 text-sm text-slate-400">
+                                    <span class="flex items-center gap-1"><i data-lucide="video" class="w-4 h-4"></i> 2 videos</span>
+                                    <span class="flex items-center gap-1"><i data-lucide="check-circle" class="w-4 h-4"></i> 0 completados</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Annotations -->
+                <div class="space-y-4">
+                    <div class="bg-slate-900 p-4 rounded-lg border-l-4 border-blue-500">
+                        <h4 class="font-semibold text-blue-400 mb-2 flex items-center gap-2">
+                            <i data-lucide="info" class="w-4 h-4"></i>
+                            Context ID
+                        </h4>
+                        <p class="text-sm text-slate-400">Cada proyecto tiene un <code class="bg-slate-800 px-2 py-1 rounded">contextId</code> que determina la carpeta <code class="bg-slate-800 px-2 py-1 rounded">projects/{id}/</code> donde OpenCode lee los archivos de contexto.</p>
+                    </div>
+
+                    <div class="bg-slate-900 p-4 rounded-lg border-l-4 border-green-500">
+                        <h4 class="font-semibold text-green-400 mb-2 flex items-center gap-2">
+                            <i data-lucide="folder" class="w-4 h-4"></i>
+                            Estructura de Carpetas
+                        </h4>
+                        <p class="text-sm text-slate-400">Por cada proyecto se crea automáticamente:</p>
+                        <pre class="mt-2 text-xs text-slate-500 bg-slate-800 p-3 rounded">projects/promo-mayo-2024/
+├── system.md
+├── brand.md
+└── audience.md</pre>
+                    </div>
+
+            </div>
+        </div>
+
+        <!-- Screen 2: New Video -->
+        <div id="screen-1" class="screen hidden">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-white mb-2">2. Crear Nuevo Video</h2>
+                <p class="text-slate-400">El usuario escribe un prompt y el sistema inicia una sesión ACP con OpenCode.</p>
+            </div>
+
+            <div class="grid gap-8">
+                <!-- Wireframe -->
+                <div class="screen-container bg-slate-900 rounded-xl overflow-hidden border border-slate-800">
+                    <!-- Header -->
+                    <div class="bg-slate-800 px-6 py-4 flex items-center gap-4 border-b border-slate-700">
+                        <button class="text-slate-400 hover:text-white">
+                            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                        </button>
+                        <div>
+                            <p class="text-xs text-slate-500">Promo Mayo 2024</p>
+                            <h3 class="font-semibold text-white">Nuevo Video</h3>
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="p-6">
+                        <!-- Project Badge -->
+                        <div class="flex items-center gap-2 mb-6 p-3 bg-slate-800 rounded-lg">
+                            <div class="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg flex items-center justify-center text-sm">🎯</div>
+                            <div>
+                                <p class="text-xs text-slate-500">Contexto</p>
+                                <p class="text-sm text-white">promo-mayo-2024</p>
+                            </div>
+                            <div class="ml-auto flex items-center gap-2 text-xs text-slate-400">
+                                <i data-lucide="file-text" class="w-4 h-4"></i>
+                                <span>3 archivos</span>
+                            </div>
+                        </div>
+
+                        <!-- Prompt Input -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-slate-300 mb-2">Describe tu video</label>
+                            <textarea class="w-full h-32 p-4 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 resize-none" placeholder="Ej: Video promocional para membresías con 50% de descuento. Enfoque en transformaciones de clientes y ambiente energético del gimnasio."></textarea>
+                            <p class="mt-2 text-xs text-slate-500">OpenCode usará el contexto de projects/promo-mayo-2024/ para generar una idea relevante.</p>
+                        </div>
+
+                        <!-- Model Selection -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-slate-300 mb-2">Modelo para generación</label>
+                            <div class="grid grid-cols-3 gap-3">
+                                <div class="p-3 bg-blue-500/20 border border-blue-500 rounded-lg cursor-pointer">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                        <span class="text-sm font-medium text-blue-400">Claude Opus</span>
+                                    </div>
+                                    <p class="text-xs text-slate-400">Máxima creatividad</p>
+                                </div>
+                                <div class="p-3 bg-slate-800 border border-slate-700 rounded-lg cursor-pointer hover:border-slate-600">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <div class="w-2 h-2 bg-slate-500 rounded-full"></div>
+                                        <span class="text-sm font-medium text-slate-300">Claude Sonnet</span>
+                                    </div>
+                                    <p class="text-xs text-slate-500">Balance</p>
+                                </div>
+                                <div class="p-3 bg-slate-800 border border-slate-700 rounded-lg cursor-pointer hover:border-slate-600">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <div class="w-2 h-2 bg-slate-500 rounded-full"></div>
+                                        <span class="text-sm font-medium text-slate-300">Claude Haiku</span>
+                                    </div>
+                                    <p class="text-xs text-slate-500">Rápido</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Generate Button -->
+                        <button class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg flex items-center justify-center gap-2 transition-colors">
+                            <i data-lucide="sparkles" class="w-5 h-5"></i>
+                            Generar Idea con OpenCode
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Screen 3: Generating Idea -->
+        <div id="screen-2" class="screen hidden">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-white mb-2">3. Generando Idea (Streaming)</h2>
+                <p class="text-slate-400">La interfaz muestra el progreso en tiempo real mientras OpenCode genera la idea.</p>
+            </div>
+
+            <div class="grid gap-8">
+                <!-- Wireframe -->
+                <div class="screen-container bg-slate-900 rounded-xl overflow-hidden border border-slate-800">
+                    <!-- Header -->
+                    <div class="bg-slate-800 px-6 py-4 flex items-center justify-between border-b border-slate-700">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center animate-pulse">
+                                <i data-lucide="loader-2" class="w-4 h-4 text-white animate-spin"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-white">Generando Idea</h3>
+                                <p class="text-xs text-slate-400">Sesión: acp-7f8d9a2e</p>
+                            </div>
+                        </div>
+                        <span class="px-3 py-1 bg-green-500/20 text-green-400 text-xs rounded-full flex items-center gap-1">
+                            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                            Conectado
+                        </span>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="p-6">
+                        <!-- Progress Steps -->
+                        <div class="flex items-center justify-between mb-8">
+                            <div class="flex flex-col items-center">
+                                <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center mb-2">
+                                    <i data-lucide="check" class="w-5 h-5 text-white"></i>
+                                </div>
+                                <span class="text-xs text-green-400">Conectado</span>
+                            </div>
+                            <div class="flex-1 h-0.5 bg-green-500 mx-2"></div>
+                            <div class="flex flex-col items-center">
+                                <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center mb-2">
+                                    <i data-lucide="check" class="w-5 h-5 text-white"></i>
+                                </div>
+                                <span class="text-xs text-green-400">Leyendo contexto</span>
+                            </div>
+                            <div class="flex-1 h-0.5 bg-blue-500 mx-2"></div>
+                            <div class="flex flex-col items-center">
+                                <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center mb-2 animate-pulse">
+                                    <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+                                </div>
+                                <span class="text-xs text-blue-400">Generando</span>
+                            </div>
+                            <div class="flex-1 h-0.5 bg-slate-700 mx-2"></div>
+                            <div class="flex flex-col items-center">
+                                <div class="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center mb-2">
+                                    <i data-lucide="film" class="w-5 h-5 text-slate-500"></i>
+                                </div>
+                                <span class="text-xs text-slate-500">Escenas</span>
+                            </div>
+                        </div>
+
+                        <!-- Live Stream -->
+                        <div class="bg-slate-800 rounded-lg p-4 mb-4 border border-slate-700">
+                            <div class="flex items-center gap-2 mb-3 text-xs text-slate-500">
+                                <i data-lucide="terminal" class="w-4 h-4"></i>
+                                Stream en tiempo real (SSE)
+                            </div>
+                            <div class="space-y-2 font-mono text-sm">
+                                <div class="text-slate-400">
+                                    <span class="text-blue-400">→</span> Iniciando sesión ACP...
+                                </div>
+                                <div class="text-slate-400">
+                                    <span class="text-blue-400">→</span> Contexto: projects/promo-mayo-2024/
+                                </div>
+                                <div class="text-slate-400">
+                                    <span class="text-green-400">✓</span> system.md cargado
+                                </div>
+                                <div class="text-slate-400">
+                                    <span class="text-green-400">✓</span> brand.md cargado
+                                </div>
+                                <div class="text-slate-400">
+                                    <span class="text-yellow-400">⟳</span> Generando idea creativa...
+                                </div>
+                                <div class="text-slate-300 border-l-2 border-blue-500 pl-3 py-2 bg-slate-700/30 rounded-r">
+                                    "Verano Fitness: Transforma tu cuerpo con nuestra promoción de membresías..."
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cancel Button -->
+                        <button class="w-full py-2 border border-slate-600 text-slate-400 rounded-lg hover:bg-slate-800 transition-colors flex items-center justify-center gap-2">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                            Cancelar generación
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Screen 4: Scene Approval -->
+        <div id="screen-3" class="screen hidden">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-white mb-2">4. Revisar y Aprobar Escenas</h2>
+                <p class="text-slate-400">El usuario revisa las escenas generadas, puede editarlas o regenerar antes de aprobar.</p>
+            </div>
+
+            <div class="grid gap-8">
+                <!-- Wireframe -->
+                <div class="screen-container bg-slate-900 rounded-xl overflow-hidden border border-slate-800">
+                    <!-- Header -->
+                    <div class="bg-slate-800 px-6 py-4 border-b border-slate-700">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-semibold text-white text-lg">Verano Fitness: 50% OFF</h3>
+                            <span class="px-3 py-1 bg-yellow-500/20 text-yellow-400 text-xs rounded-full">Borrador</span>
+                        </div>
+                        <p class="text-sm text-slate-400">Video promocional para membresías con descuento de verano.</p>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="p-6">
+                        <!-- Scenes -->
+                        <div class="space-y-4">
+                            <!-- Scene 1 -->
+                            <div class="bg-slate-800 rounded-lg p-4 border border-slate-700">
+                                <div class="flex items-start gap-4">
+                                    <div class="flex flex-col items-center">
+                                        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center font-bold text-white">1</div>
+                                        <div class="w-0.5 h-12 bg-slate-700 my-2"></div>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <h4 class="font-medium text-white">Hook: ¿Listo para el verano?</h4>
+                                            <span class="text-xs text-slate-500">6s</span>
+                                        </div>
+                                        <p class="text-sm text-slate-400 mb-3">Atleta entra al gimnasio con energía, sonriendo a cámara. Texto grande: "¿LISTO PARA EL VERANO?"</p>
+                                        <div class="flex items-center gap-2">
+                                            <span class="px-2 py-1 bg-blue-500/20 text-blue-400 text-xs rounded">energía</span>
+                                            <span class="px-2 py-1 bg-purple-500/20 text-purple-400 text-xs rounded">hook</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col gap-2">
+                                        <button class="p-2 text-slate-400 hover:text-blue-400 transition-colors">
+                                            <i data-lucide="edit" class="w-4 h-4"></i>
+                                        </button>
+                                        <button class="p-2 text-slate-400 hover:text-green-400 transition-colors">
+                                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Scene 2 -->
+                            <div class="bg-slate-800 rounded-lg p-4 border border-slate-700">
+                                <div class="flex items-start gap-4">
+                                    <div class="flex flex-col items-center">
+                                        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center font-bold text-white">2</div>
+                                        <div class="w-0.5 h-12 bg-slate-700 my-2"></div>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <h4 class="font-medium text-white">Oferta: 50% OFF</h4>
+                                            <span class="text-xs text-slate-500">8s</span>
+                                        </div>
+                                        <p class="text-sm text-slate-400 mb-3">Mostrar precio tachado y nuevo precio con 50% descuento. Animación de "$99 → $49"</p>
+                                        <div class="flex items-center gap-2">
+                                            <span class="px-2 py-1 bg-orange-500/20 text-orange-400 text-xs rounded">oferta</span>
+                                            <span class="px-2 py-1 bg-red-500/20 text-red-400 text-xs rounded">urgencia</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col gap-2">
+                                        <button class="p-2 text-slate-400 hover:text-blue-400 transition-colors">
+                                            <i data-lucide="edit" class="w-4 h-4"></i>
+                                        </button>
+                                        <button class="p-2 text-slate-400 hover:text-green-400 transition-colors">
+                                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Scene 3 -->
+                            <div class="bg-slate-800 rounded-lg p-4 border border-slate-700">
+                                <div class="flex items-start gap-4">
+                                    <div class="flex flex-col items-center">
+                                        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center font-bold text-white">3</div>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <h4 class="font-medium text-white">CTA: Únete hoy</h4>
+                                            <span class="text-xs text-slate-500">6s</span>
+                                        </div>
+                                        <p class="text-sm text-slate-400 mb-3">Logo del gimnasio + botón "ÚNETE AHORA" + URL. Transición suave.</p>
+                                        <div class="flex items-center gap-2">
+                                            <span class="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded">CTA</span>
+                                            <span class="px-2 py-1 bg-slate-600/50 text-slate-400 text-xs rounded">logo</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col gap-2">
+                                        <button class="p-2 text-slate-400 hover:text-blue-400 transition-colors">
+                                            <i data-lucide="edit" class="w-4 h-4"></i>
+                                        </button>
+                                        <button class="p-2 text-slate-400 hover:text-green-400 transition-colors">
+                                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex gap-3 mt-6">
+                            <button class="flex-1 py-3 border border-slate-600 text-slate-300 rounded-lg hover:bg-slate-800 transition-colors flex items-center justify-center gap-2">
+                                <i data-lucide="message-square" class="w-4 h-4"></i>
+                                Pedir cambios
+                            </button>
+                            <button class="flex-1 py-3 bg-green-600 hover:bg-green-500 text-white font-medium rounded-lg flex items-center justify-center gap-2 transition-colors">
+                                <i data-lucide="check" class="w-5 h-5"></i>
+                                Aprobar escenas
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Screen 5: Code Editor + Preview -->
+        <div id="screen-4" class="screen hidden">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-white mb-2">5. Editor de Código + Preview</h2>
+                <p class="text-slate-400">El usuario ve el código generado, puede editarlo con ayuda del agente, y visualiza el resultado en tiempo real con Remotion Player.</p>
+            </div>
+
+            <div class="grid gap-8">
+                <!-- Wireframe -->
+                <div class="screen-container bg-slate-900 rounded-xl overflow-hidden border border-slate-800">
+                    <!-- Header -->
+                    <div class="bg-slate-800 px-4 py-3 flex items-center justify-between border-b border-slate-700">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2 py-1 bg-purple-500/20 text-purple-400 text-xs rounded font-mono">Scene1.tsx</span>
+                            <span class="text-xs text-slate-500">Hook: ¿Listo para el verano?</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button class="p-2 text-slate-400 hover:text-white">
+                                <i data-lucide="play" class="w-4 h-4"></i>
+                            </button>
+                            <button class="p-2 text-slate-400 hover:text-white">
+                                <i data-lucide="maximize" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Split View -->
+                    <div class="grid grid-cols-2 h-96">
+                        <!-- Code Panel -->
+                        <div class="bg-slate-950 border-r border-slate-800 overflow-auto">
+                            <div class="p-4 font-mono text-sm">
+                                <div class="text-slate-500 mb-2">// Código generado por OpenCode</div>
+                                <div><span class="text-purple-400">import</span> { <span class="text-yellow-400">AbsoluteFill</span> } <span class="text-purple-400">from</span> <span class="text-green-400">'remotion'</span>;</div>
+                                <div class="mt-2"><span class="text-purple-400">export const</span> <span class="text-blue-400">Scene1</span>: <span class="text-yellow-400">React.FC</span> = () => {</div>
+                                <div class="ml-4 mt-1"><span class="text-purple-400">return</span> (</div>
+                                <div class="ml-8"><span class="text-yellow-400">&lt;AbsoluteFill</span> <span class="text-blue-400">className</span>=<span class="text-green-400">"bg-gradient-to-br from-orange-500 to-red-600"</span><span class="text-yellow-400">&gt;</span></div>
+                                <div class="ml-12"><span class="text-yellow-400">&lt;h1</span> <span class="text-blue-400">className</span>=<span class="text-green-400">"text-6xl font-bold text-white"</span><span class="text-yellow-400">&gt;</span></div>
+                                <div class="ml-16 text-slate-300">¿LISTO PARA</div>
+                                <div class="ml-16 text-slate-300">EL VERANO?</div>
+                                <div class="ml-12"><span class="text-yellow-400">&lt;/h1&gt;</span></div>
+                                <div class="ml-8"><span class="text-yellow-400">&lt;/AbsoluteFill&gt;</span></div>
+                                <div class="ml-4">);</div>
+                                <div>};</div>
+                            </div>
+                        </div>
+
+                        <!-- Preview Panel -->
+                        <div class="bg-slate-900 flex flex-col">
+                            <!-- Remotion Player Placeholder -->
+                            <div class="flex-1 bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center relative">
+                                <div class="text-center">
+                                    <h1 class="text-4xl font-bold text-white mb-4">¿LISTO PARA<br>EL VERANO?</h1>
+                                    <p class="text-white/80 text-sm">1080 × 1920 (9:16)</p>
+                                </div>
+                                <!-- Overlay UI -->
+                                <div class="absolute bottom-0 left-0 right-0 bg-slate-900/90 p-3">
+                                    <div class="flex items-center gap-3">
+                                        <button class="text-white">
+                                            <i data-lucide="pause" class="w-5 h-5"></i>
+                                        </button>
+                                        <div class="flex-1 h-1 bg-slate-700 rounded-full overflow-hidden">
+                                            <div class="w-1/3 h-full bg-blue-500"></div>
+                                        </div>
+                                        <span class="text-xs text-slate-400">0:02 / 0:06</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        </div>
+
+        <!-- Agent Panel - Persistent Right Sidebar -->
+        <aside class="w-80 bg-slate-900 border-l border-slate-800 flex flex-col">
+            <!-- Agent Panel Header -->
+            <div class="bg-slate-800 px-4 py-3 border-b border-slate-700">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+                            <i data-lucide="bot" class="w-4 h-4 text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-white text-sm">OpenCode</h3>
+                            <p class="text-xs text-green-400">● Conectado</p>
+                        </div>
+                    </div>
+                    <button class="text-slate-400 hover:text-white" title="Abrir en Web">
+                        <i data-lucide="external-link" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <div class="text-xs text-slate-500 font-mono truncate">
+                    Sesión: acp-7f8d9a2e
+                </div>
+            </div>
+
+            <!-- Agent Status Bar -->
+            <div class="px-4 py-2 bg-slate-800/50 border-b border-slate-700">
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-slate-400">Contexto:</span>
+                    <span class="text-blue-400 truncate max-w-[120px]">promo-mayo-2024</span>
+                </div>
+                <div class="flex items-center justify-between text-xs mt-1">
+                    <span class="text-slate-400">Modelo:</span>
+                    <span class="text-purple-400">Claude Opus</span>
+                </div>
+            </div>
+
+            <!-- Message History -->
+            <div class="flex-1 overflow-y-auto p-4 space-y-3">
+                <!-- System Message -->
+                <div class="text-xs text-slate-500 text-center py-2">
+                    Sesión iniciada • hace 5 min
+                </div>
+
+                <!-- User Message -->
+                <div class="flex gap-2">
+                    <div class="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 text-xs font-bold">U</div>
+                    <div class="bg-blue-500/10 rounded-lg p-2 text-sm text-slate-300 flex-1">
+                        Genera idea para video de membresías 50% off
+                    </div>
+                </div>
+
+                <!-- Agent Message -->
+                <div class="flex gap-2">
+                    <div class="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="bot" class="w-3 h-3 text-white"></i>
+                    </div>
+                    <div class="bg-slate-800 rounded-lg p-2 text-sm text-slate-300 flex-1">
+                        Generando idea creativa basada en el contexto de promo-mayo-2024...
+                    </div>
+                </div>
+
+                <!-- Tool Call -->
+                <div class="flex gap-2">
+                    <div class="w-6 h-6 rounded-full bg-purple-500 flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="wrench" class="w-3 h-3 text-white"></i>
+                    </div>
+                    <div class="bg-purple-500/10 rounded-lg p-2 text-sm text-slate-300 flex-1">
+                        <div class="text-xs text-purple-400 mb-1">Tool: generate_idea</div>
+                        <div class="text-slate-400">Ejecutando generación de escenas...</div>
+                    </div>
+                </div>
+
+                <!-- Agent Response -->
+                <div class="flex gap-2">
+                    <div class="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="bot" class="w-3 h-3 text-white"></i>
+                    </div>
+                    <div class="bg-slate-800 rounded-lg p-2 text-sm text-slate-300 flex-1">
+                        ✅ Idea generada: "Verano Fitness: Transforma tu cuerpo"
+                        <div class="mt-2 p-2 bg-slate-900 rounded text-xs text-slate-400">
+                            <div class="font-medium text-slate-300 mb-1">3 escenas:</div>
+                            1. Hook: ¿Listo para el verano? (6s)<br>
+                            2. Oferta: 50% OFF (8s)<br>
+                            3. CTA: Únete hoy (6s)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent Input -->
+            <div class="p-4 border-t border-slate-700 bg-slate-800">
+                <div class="flex gap-2 mb-2">
+                    <input type="text" placeholder="Escribe un mensaje..." class="flex-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:border-blue-500">
+                    <button class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500">
+                        <i data-lucide="send" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex gap-1">
+                        <button class="px-2 py-1 bg-slate-700 text-slate-400 text-xs rounded hover:bg-slate-600">
+                            <i data-lucide="plus" class="w-3 h-3 inline"></i> Contexto
+                        </button>
+                        <button class="px-2 py-1 bg-slate-700 text-slate-400 text-xs rounded hover:bg-slate-600">
+                            <i data-lucide="refresh-cw" class="w-3 h-3 inline"></i> Reconectar
+                        </button>
+                    </div>
+                    <button class="text-xs text-slate-400 hover:text-blue-400 flex items-center gap-1">
+                        <i data-lucide="external-link" class="w-3 h-3"></i>
+                        Abrir en Web
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="p-3 border-t border-slate-700 bg-slate-800/50">
+                <div class="text-xs text-slate-500 mb-2">Acciones rápidas:</div>
+                <div class="flex flex-wrap gap-1">
+                    <button class="px-2 py-1 bg-slate-700 text-slate-300 text-xs rounded-full hover:bg-slate-600">Generar idea</button>
+                    <button class="px-2 py-1 bg-slate-700 text-slate-300 text-xs rounded-full hover:bg-slate-600">Editar escena</button>
+                    <button class="px-2 py-1 bg-slate-700 text-slate-300 text-xs rounded-full hover:bg-slate-600">Crear código</button>
+                    <button class="px-2 py-1 bg-slate-700 text-slate-300 text-xs rounded-full hover:bg-slate-600">Optimizar</button>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <script>
+        function showScreen(index) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('block'));
+
+            // Show selected screen
+            document.getElementById(`screen-${index}`).classList.remove('hidden');
+            document.getElementById(`screen-${index}`).classList.add('block');
+
+            // Update buttons
+            document.querySelectorAll('.nav-btn').forEach((btn, i) => {
+                if (i === index) {
+                    btn.classList.remove('bg-slate-700', 'text-slate-300');
+                    btn.classList.add('bg-blue-600', 'text-white');
+                } else {
+                    btn.classList.remove('bg-blue-600', 'text-white');
+                    btn.classList.add('bg-slate-700', 'text-slate-300');
+                }
+            });
+        }
+
+        // Initialize icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>

@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Pipeline Wireframes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .wireframe-box {
+            border: 2px dashed #cbd5e1;
+            background: #f8fafc;
+            position: relative;
+        }
+        .wireframe-label {
+            position: absolute;
+            top: -10px;
+            left: 8px;
+            background: #1e293b;
+            color: #f8fafc;
+            font-size: 10px;
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .arrow {
+            position: relative;
+        }
+        .arrow::after {
+            content: '▼';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #64748b;
+        }
+        .active-screen {
+            box-shadow: 0 0 0 3px #F57E24;
+        }
+        .tab-active {
+            border-bottom: 3px solid #F57E24;
+            color: #F57E24;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen" x-data="{ activeView: 'projects' }">
+
+    <!-- HEADER -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold text-sm">VP</span>
+                </div>
+                <h1 class="text-lg font-semibold text-slate-800">Video Pipeline</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="text-xs text-slate-500 mono">v1.0.0</span>
+                <div class="flex items-center gap-2 px-3 py-1.5 bg-green-50 rounded-full">
+                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span class="text-xs text-green-700 font-medium">Sistema activo</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- View Tabs -->
+        <div class="max-w-7xl mx-auto px-4 flex gap-1">
+            <button @click="activeView = 'projects'" :class="activeView === 'projects' ? 'tab-active' : 'text-slate-500 hover:text-slate-700'" class="px-4 py-2 text-sm font-medium transition-colors">
+                Proyectos
+            </button>
+            <button @click="activeView = 'creation'" :class="activeView === 'creation' ? 'tab-active' : 'text-slate-500 hover:text-slate-700'" class="px-4 py-2 text-sm font-medium transition-colors">
+                Creación
+            </button>
+            <button @click="activeView = 'videoDetail'" :class="activeView === 'videoDetail' ? 'tab-active' : 'text-slate-500 hover:text-slate-700'" class="px-4 py-2 text-sm font-medium transition-colors">
+                Detalle Video
+            </button>
+            <button @click="activeView = 'preview'" :class="activeView === 'preview' ? 'tab-active' : 'text-slate-500 hover:text-slate-700'" class="px-4 py-2 text-sm font-medium transition-colors">
+                Preview
+            </button>
+            <button @click="activeView = 'chat'" :class="activeView === 'chat' ? 'tab-active' : 'text-slate-500 hover:text-slate-700'" class="px-4 py-2 text-sm font-medium transition-colors">
+                Chat OpenCode
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+
+        <!-- ======================== VIEW 1: PROJECT LIST ======================== -->
+        <div x-show="activeView === 'projects'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-slate-800 mb-1">Proyectos</h2>
+                <p class="text-slate-500 text-sm">Organiza tus videos por campaña o tipo de contenido</p>
+            </div>
+
+            <!-- Stats Row -->
+            <div class="grid grid-cols-4 gap-4 mb-8">
+                <div class="bg-white rounded-xl p-4 border border-slate-200">
+                    <div class="text-3xl font-bold text-slate-800">12</div>
+                    <div class="text-sm text-slate-500">Proyectos activos</div>
+                </div>
+                <div class="bg-white rounded-xl p-4 border border-slate-200">
+                    <div class="text-3xl font-bold text-orange-500">48</div>
+                    <div class="text-sm text-slate-500">Videos totales</div>
+                </div>
+                <div class="bg-white rounded-xl p-4 border border-slate-200">
+                    <div class="text-3xl font-bold text-green-500">31</div>
+                    <div class="text-sm text-slate-500">Completados</div>
+                </div>
+                <div class="bg-white rounded-xl p-4 border border-slate-200">
+                    <div class="text-3xl font-bold text-blue-500">5</div>
+                    <div class="text-sm text-slate-500">En proceso</div>
+                </div>
+            </div>
+
+            <!-- Projects Grid -->
+            <div class="grid grid-cols-3 gap-6">
+
+                <!-- Project Card 1 -->
+                <div class="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+                    <div class="h-2 bg-gradient-to-r from-orange-500 to-orange-400"></div>
+                    <div class="p-5">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                                <span class="text-orange-600 font-bold">PM</span>
+                            </div>
+                            <span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full font-medium">Activo</span>
+                        </div>
+                        <h3 class="font-semibold text-slate-800 mb-1">Promoción Mayo 2024</h3>
+                        <p class="text-sm text-slate-500 mb-4">Campaña de membresías con descuento</p>
+                        <div class="flex items-center justify-between text-xs text-slate-400 mb-4">
+                            <span>12 videos</span>
+                            <span>8 completados</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-1.5 mb-4">
+                            <div class="bg-green-500 h-1.5 rounded-full" style="width: 67%"></div>
+                        </div>
+                        <div class="text-xs text-slate-400 mono">./content/promo-mayo</div>
+                    </div>
+                </div>
+
+                <!-- Project Card 2 -->
+                <div class="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+                    <div class="h-2 bg-gradient-to-r from-blue-500 to-blue-400"></div>
+                    <div class="p-5">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <span class="text-blue-600 font-bold">TC</span>
+                            </div>
+                            <span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full font-medium">Activo</span>
+                        </div>
+                        <h3 class="font-semibold text-slate-800 mb-1">Testimonios Clientes</h3>
+                        <p class="text-sm text-slate-500 mb-4">Videos de testimonios en gym</p>
+                        <div class="flex items-center justify-between text-xs text-slate-400 mb-4">
+                            <span>24 videos</span>
+                            <span>18 completados</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-1.5 mb-4">
+                            <div class="bg-green-500 h-1.5 rounded-full" style="width: 75%"></div>
+                        </div>
+                        <div class="text-xs text-slate-400 mono">./content/testimonials</div>
+                    </div>
+                </div>
+
+                <!-- Project Card 3 - New Project -->
+                <div class="bg-white rounded-xl border-2 border-dashed border-slate-300 overflow-hidden hover:border-orange-400 hover:bg-orange-50/30 transition-all cursor-pointer flex flex-col items-center justify-center min-h-[220px]">
+                    <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mb-3">
+                        <span class="text-2xl text-slate-400">+</span>
+                    </div>
+                    <span class="text-sm font-medium text-slate-500">Nuevo Proyecto</span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ======================== VIEW 2: VIDEO CREATION ======================== -->
+        <div x-show="activeView === 'creation'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-slate-800 mb-1">Crear Video</h2>
+                <p class="text-slate-500 text-sm">Selecciona proyecto y escribe tu prompt para OpenCode</p>
+            </div>
+
+            <div class="grid grid-cols-3 gap-6">
+
+                <!-- Left: Project Selector + Prompt -->
+                <div class="col-span-2 space-y-6">
+
+                    <!-- Project Selector -->
+                    <div class="bg-white rounded-xl border border-slate-200 p-5 wireframe-box">
+                        <span class="wireframe-label">STEP 1</span>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Selecciona Proyecto</label>
+                        <select class="w-full px-4 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            <option>Promoción Mayo 2024</option>
+                            <option>Testimonios Clientes</option>
+                            <option>Tips de Entrenamiento</option>
+                        </select>
+                        <div class="mt-2 text-xs text-slate-400 mono">Contexto: ./content/promo-mayo</div>
+                    </div>
+
+                    <!-- Prompt Input -->
+                    <div class="bg-white rounded-xl border border-slate-200 p-5 wireframe-box">
+                        <span class="wireframe-label">STEP 2</span>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Prompt para OpenCode</label>
+                        <textarea class="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm h-32 resize-none focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Ej:生成一个关于 membresías con 50% de descuento para健身房..."></textarea>
+                        <div class="mt-2 text-xs text-slate-400">OpenCode analizará el contexto del proyecto y generará una idea de video</div>
+                    </div>
+
+                    <!-- Generate Button -->
+                    <button class="w-full py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg font-medium hover:from-orange-600 hover:to-orange-700 transition-all flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        Generar Idea con OpenCode
+                    </button>
+
+                    <!-- Context Preview -->
+                    <div class="bg-white rounded-xl border border-slate-200 p-5 wireframe-box">
+                        <span class="wireframe-label">CONTEXTO</span>
+                        <h4 class="text-sm font-medium text-slate-700 mb-3">Archivos en contexto</h4>
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-2 text-xs text-slate-600 bg-slate-50 px-3 py-2 rounded">
+                                <span class="text-green-500">📄</span> README.md
+                            </div>
+                            <div class="flex items-center gap-2 text-xs text-slate-600 bg-slate-50 px-3 py-2 rounded">
+                                <span class="text-blue-500">🎨</span> brand-guidelines.md
+                            </div>
+                            <div class="flex items-center gap-2 text-xs text-slate-600 bg-slate-50 px-3 py-2 rounded">
+                                <span class="text-purple-500">📝</span> copy/headlines.md
+                            </div>
+                            <div class="flex items-center gap-2 text-xs text-slate-600 bg-slate-50 px-3 py-2 rounded">
+                                <span class="text-orange-500">🖼️</span> images/logo.png
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right: Generated Idea Preview -->
+                <div class="space-y-6">
+
+                    <!-- Idea Card (appears after generation) -->
+                    <div class="bg-white rounded-xl border border-slate-200 p-5 wireframe-box">
+                        <span class="wireframe-label">IDEA</span>
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-sm font-semibold text-slate-700">Idea Generada</h4>
+                            <span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 text-xs rounded-full">Esperando</span>
+                        </div>
+                        <div class="space-y-3 text-sm">
+                            <div>
+                                <div class="text-xs text-slate-500 mb-1">Título</div>
+                                <div class="text-slate-700 font-medium bg-slate-50 p-2 rounded">Membresías 50% Off - Verano Fit</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-slate-500 mb-1">Descripción</div>
+                                <div class="text-slate-600 bg-slate-50 p-2 rounded text-xs leading-relaxed">Video dinámico de 30s mostrando transformación fitness con oferta limitada.</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-slate-500 mb-3">Escenas (3)</div>
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-2 text-xs">
+                                        <span class="w-5 h-5 bg-orange-100 text-orange-600 rounded text-center text-xs font-medium">1</span>
+                                        <span class="text-slate-600">Gimnasio vacío → lleno</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-xs">
+                                        <span class="w-5 h-5 bg-orange-100 text-orange-600 rounded text-center text-xs font-medium">2</span>
+                                        <span class="text-slate-600">Stats con descuento</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-xs">
+                                        <span class="w-5 h-5 bg-orange-100 text-orange-600 rounded text-center text-xs font-medium">3</span>
+                                        <span class="text-slate-600">CTA final</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex gap-2">
+                            <button class="flex-1 py-2 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium">Editar</button>
+                            <button class="flex-1 py-2 bg-green-500 text-white rounded-lg text-sm font-medium">Aprobar</button>
+                        </div>
+                    </div>
+
+                    <!-- State Machine Indicator -->
+                    <div class="bg-white rounded-xl border border-slate-200 p-5 wireframe-box">
+                        <span class="wireframe-label">STATE</span>
+                        <h4 class="text-sm font-medium text-slate-700 mb-3">Estado del Pipeline</h4>
+                        <div class="flex items-center gap-1">
+                            <div class="px-2 py-1 bg-slate-800 text-white text-xs rounded font-medium">draft</div>
+                            <span class="text-slate-400 mx-1">→</span>
+                            <div class="px-2 py-1 bg-orange-500 text-white text-xs rounded font-medium">gen_idea</div>
+                            <span class="text-slate-400 mx-1">→</span>
+                            <div class="px-2 py-1 bg-slate-200 text-slate-500 text-xs rounded">idea_ready</div>
+                            <span class="text-slate-400 mx-1">→</span>
+                            <div class="px-2 py-1 bg-slate-200 text-slate-500 text-xs rounded">clips</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== VIEW 3: VIDEO DETAIL ======================== -->
+        <div x-show="activeView === 'videoDetail'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+
+            <div class="mb-6">
+                <div class="flex items-center gap-2 text-sm text-slate-500 mb-2">
+                    <span>Proyectos</span>
+                    <span>›</span>
+                    <span>Promoción Mayo 2024</span>
+                    <span>›</span>
+                    <span class="text-slate-800 font-medium">Membresías 50% Off</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800 mb-1">Membresías 50% Off</h2>
+                        <div class="flex items-center gap-3">
+                            <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full font-medium">generating_clips</span>
+                            <span class="text-sm text-slate-500">2/3 escenas completas</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="px-4 py-2 border border-slate-200 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50">Regenerar</button>
+                        <button class="px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-medium">Aprobar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="bg-white rounded-xl border border-slate-200 p-5 mb-6">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-slate-700">Progreso de Generación</span>
+                    <span class="text-sm font-bold text-orange-500">67%</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-3">
+                    <div class="bg-gradient-to-r from-orange-400 to-orange-500 h-3 rounded-full transition-all" style="width: 67%"></div>
+                </div>
+                <div class="flex justify-between text-xs text-slate-400 mt-2">
+                    <span>OpenCode: ✓ Listo</span>
+                    <span>MiniMax: 2/3 clips</span>
+                    <span>Remotion: Pendiente</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-6">
+
+                <!-- Scenes List -->
+                <div class="col-span-2 space-y-4">
+
+                    <!-- Scene 1 - Success -->
+                    <div class="bg-white rounded-xl border border-green-200 overflow-hidden">
+                        <div class="flex">
+                            <div class="w-1 bg-green-500"></div>
+                            <div class="flex-1 p-4">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center font-bold text-sm">1</div>
+                                        <div>
+                                            <h4 class="font-medium text-slate-800">Gimnasio vacío → lleno</h4>
+                                            <p class="text-sm text-slate-500 mt-0.5">Transición dramática de espacio vacío a lleno</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full font-medium">✓ Completado</span>
+                                        <span class="text-xs text-slate-400">6s</span>
+                                    </div>
+                                </div>
+                                <div class="mt-3 flex items-center gap-3">
+                                    <div class="flex-1 bg-slate-100 rounded-lg p-2">
+                                        <div class="text-xs text-slate-500 mb-1">MiniMax Prompt</div>
+                                        <div class="text-xs text-slate-700 mono">"Empty modern gym transitioning to full..."</div>
+                                    </div>
+                                    <button class="px-3 py-1.5 border border-slate-200 rounded text-xs text-slate-600">Regenerar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scene 2 - Success -->
+                    <div class="bg-white rounded-xl border border-green-200 overflow-hidden">
+                        <div class="flex">
+                            <div class="w-1 bg-green-500"></div>
+                            <div class="flex-1 p-4">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center font-bold text-sm">2</div>
+                                        <div>
+                                            <h4 class="font-medium text-slate-800">Stats con descuento</h4>
+                                            <p class="text-sm text-slate-500 mt-0.5">Gráficos mostrando 50% OFF + beneficios</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full font-medium">✓ Completado</span>
+                                        <span class="text-xs text-slate-400">6s</span>
+                                    </div>
+                                </div>
+                                <div class="mt-3 flex items-center gap-3">
+                                    <div class="flex-1 bg-slate-100 rounded-lg p-2">
+                                        <div class="text-xs text-slate-500 mb-1">MiniMax Prompt</div>
+                                        <div class="text-xs text-slate-700 mono">"Fitness stats animation with 50% off..."</div>
+                                    </div>
+                                    <button class="px-3 py-1.5 border border-slate-200 rounded text-xs text-slate-600">Regenerar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scene 3 - Processing -->
+                    <div class="bg-white rounded-xl border border-orange-200 overflow-hidden">
+                        <div class="flex">
+                            <div class="w-1 bg-orange-500"></div>
+                            <div class="flex-1 p-4">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center font-bold text-sm">3</div>
+                                        <div>
+                                            <h4 class="font-medium text-slate-800">CTA con logo</h4>
+                                            <p class="text-sm text-slate-500 mt-0.5">Pantalla final con logo y CTA</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="px-2 py-0.5 bg-orange-100 text-orange-700 text-xs rounded-full font-medium">⏳ Procesando</span>
+                                        <span class="text-xs text-slate-400">6s</span>
+                                    </div>
+                                </div>
+                                <div class="mt-3 flex items-center gap-3">
+                                    <div class="flex-1 bg-slate-100 rounded-lg p-2">
+                                        <div class="text-xs text-slate-500 mb-1">MiniMax Prompt</div>
+                                        <div class="text-xs text-slate-700 mono">"GymSpace logo animation with CTA..."</div>
+                                    </div>
+                                    <div class="px-3 py-1.5 bg-slate-100 rounded text-xs text-slate-500">Task: task_abc123</div>
+                                </div>
+                                <!-- MiniMax Progress -->
+                                <div class="mt-3 ml-11">
+                                    <div class="w-full bg-slate-100 rounded-full h-1.5">
+                                        <div class="bg-orange-500 h-1.5 rounded-full animate-pulse" style="width: 45%"></div>
+                                    </div>
+                                    <div class="text-xs text-slate-400 mt-1">MiniMax: procesando... 45%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scene 4 - Queued -->
+                    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden opacity-60">
+                        <div class="flex">
+                            <div class="w-1 bg-slate-300"></div>
+                            <div class="flex-1 p-4">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-slate-100 text-slate-400 rounded-lg flex items-center justify-center font-bold text-sm">4</div>
+                                        <div>
+                                            <h4 class="font-medium text-slate-400">Testimonio rápido</h4>
+                                            <p class="text-sm text-slate-400 mt-0.5">Cliente satisfecho recommendando</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="px-2 py-0.5 bg-slate-100 text-slate-500 text-xs rounded-full font-medium">En cola</span>
+                                        <span class="text-xs text-slate-400">8s</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right Sidebar -->
+                <div class="space-y-6">
+
+                    <!-- OpenCode Session -->
+                    <div class="bg-white rounded-xl border border-slate-200 p-5 wireframe-box">
+                        <span class="wireframe-label">OPENCODE</span>
+                        <h4 class="text-sm font-medium text-slate-700 mb-3">Sesión ACP</h4>
+                        <div class="space-y-2 text-xs">
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">Session ID</span>
+                                <span class="mono text-slate-700">sess_7a2b...</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">Status</span>
+                                <span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">connected</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">Tool calls</span>
+                                <span class="text-slate-700">12</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">Duration</span>
+                                <span class="text-slate-700">2m 34s</span>
+                            </div>
+                        </div>
+                        <button class="w-full mt-3 py-2 border border-slate-200 rounded-lg text-xs text-slate-600 hover:bg-slate-50">Ver Chat Completo</button>
+                    </div>
+
+                    <!-- Video Meta -->
+                    <div class="bg-white rounded-xl border border-slate-200 p-5 wireframe-box">
+                        <span class="wireframe-label">META</span>
+                        <h4 class="text-sm font-medium text-slate-700 mb-3">Información</h4>
+                        <div class="space-y-2 text-xs">
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">Prompt</span>
+                                <span class="text-slate-700 truncate max-w-[120px]">Membresías 50%...</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">Duración total</span>
+                                <span class="text-slate-700">26s (estimado)</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">Resolución</span>
+                                <span class="text-slate-700">1080p</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">Aspect ratio</span>
+                                <span class="text-slate-700">9:16 (Reels)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="bg-white rounded-xl border border-slate-200 p-5 wireframe-box">
+                        <span class="wireframe-label">ACTIONS</span>
+                        <div class="space-y-2">
+                            <button class="w-full py-2 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                Preview
+                            </button>
+                            <button class="w-full py-2 bg-orange-500 text-white rounded-lg text-sm font-medium flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                                Exportar MP4
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== VIEW 4: PREVIEW (REMOTION) ======================== -->
+        <div x-show="activeView === 'preview'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-slate-800 mb-1">Preview del Video</h2>
+                <p class="text-slate-500 text-sm">Remotion Player - Vista previa en tiempo real</p>
+            </div>
+
+            <div class="grid grid-cols-4 gap-6">
+
+                <!-- Player Area -->
+                <div class="col-span-3">
+                    <div class="bg-slate-900 rounded-xl overflow-hidden relative" style="aspect-ratio: 9/16; max-height: 600px;">
+                        <!-- Simulated Phone Frame -->
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="bg-gradient-to-b from-slate-800 to-slate-900 w-full h-full flex flex-col items-center justify-center p-4">
+                                <!-- Top Safe Zone -->
+                                <div class="text-center mb-auto pt-8">
+                                    <div class="inline-block px-4 py-1 bg-white/10 rounded-full text-white/60 text-xs mb-4">Reels • 9:16</div>
+                                </div>
+                                <!-- Video Content Area -->
+                                <div class="flex-1 flex items-center justify-center">
+                                    <div class="text-center">
+                                        <div class="w-24 h-24 bg-orange-500/20 rounded-full flex items-center justify-center mb-4 mx-auto">
+                                            <svg class="w-12 h-12 text-orange-400" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                        </div>
+                                        <p class="text-white/60 text-sm">Preview Remotion</p>
+                                        <p class="text-white/40 text-xs mt-1">1080x1920 @ 30fps</p>
+                                    </div>
+                                </div>
+                                <!-- Bottom Safe Zone -->
+                                <div class="text-center mb-4">
+                                    <div class="bg-white/10 text-white/80 text-xs px-4 py-2 rounded-full">Únete a GymSpace hoy</div>
+                                    <div class="flex justify-center gap-4 mt-3">
+                                        <div class="w-8 h-8 bg-white/10 rounded-full"></div>
+                                        <div class="w-8 h-8 bg-white/10 rounded-full"></div>
+                                        <div class="w-8 h-8 bg-white/10 rounded-full"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Player Controls Overlay -->
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                            <div class="flex items-center gap-4">
+                                <button class="text-white hover:text-orange-400 transition-colors">
+                                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </button>
+                                <div class="flex-1">
+                                    <div class="h-1 bg-white/30 rounded-full">
+                                        <div class="h-1 bg-orange-500 rounded-full w-1/3"></div>
+                                    </div>
+                                </div>
+                                <span class="text-white/80 text-sm mono">0:08 / 0:26</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Scene Timeline -->
+                <div class="space-y-6">
+
+                    <!-- Scene Timeline -->
+                    <div class="bg-white rounded-xl border border-slate-200 p-5 wireframe-box">
+                        <span class="wireframe-label">TIMELINE</span>
+                        <h4 class="text-sm font-medium text-slate-700 mb-3">Escenas</h4>
+                        <div class="space-y-3">
+                            <!-- Scene 1 -->
+                            <div class="relative">
+                                <div class="absolute -left-5 top-1/2 -translate-y-1/2 w-4 h-4 bg-orange-500 rounded text-white text-xs flex items-center justify-center font-medium">1</div>
+                                <div class="bg-slate-50 rounded-lg p-3 border-l-4 border-green-500">
+                                    <div class="text-sm font-medium text-slate-700">Gimnasio vacío → lleno</div>
+                                    <div class="text-xs text-slate-400 mt-1">00:00 - 00:06</div>
+                                </div>
+                            </div>
+                            <!-- Scene 2 -->
+                            <div class="relative">
+                                <div class="absolute -left-5 top-1/2 -translate-y-1/2 w-4 h-4 bg-orange-500 rounded text-white text-xs flex items-center justify-center font-medium">2</div>
+                                <div class="bg-slate-50 rounded-lg p-3 border-l-4 border-green-500">
+                                    <div class="text-sm font-medium text-slate-700">Stats con descuento</div>
+                                    <div class="text-xs text-slate-400 mt-1">00:06 - 00:12</div>
+                                </div>
+                            </div>
+                            <!-- Scene 3 -->
+                            <div class="relative">
+                                <div class="absolute -left-5 top-1/2 -translate-y-1/2 w-4 h-4 bg-orange-500 rounded text-white text-xs flex items-center justify-center font-medium">3</div>
+                                <div class="bg-slate-50 rounded-lg p-3 border-l-4 border-orange-500">
+                                    <div class="text-sm font-medium text-slate-700">CTA con logo</div>
+                                    <div class="text-xs text-slate-400 mt-1">00:12 - 00:18</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Render Settings -->
+                    <div class="bg-white rounded-xl border border-slate-200 p-5 wireframe-box">
+                        <span class="wireframe-label">RENDER</span>
+                        <h4 class="text-sm font-medium text-slate-700 mb-3">Configuración</h4>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">Codec</span>
+                                <span class="text-slate-700 font-medium">H.264</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">Resolución</span>
+                                <span class="text-slate-700 font-medium">1080x1920</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">FPS</span>
+                                <span class="text-slate-700 font-medium">30</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">Duración</span>
+                                <span class="text-slate-700 font-medium">26s</span>
+                            </div>
+                        </div>
+                        <button class="w-full mt-4 py-2.5 bg-green-500 text-white rounded-lg text-sm font-medium">
+                            Renderizar Video
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== VIEW 5: CHAT OPENCODE ======================== -->
+        <div x-show="activeView === 'chat'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-slate-800 mb-1">Chat OpenCode</h2>
+                <p class="text-slate-500 text-sm">Sesión ACP en tiempo real - Eventos stream</p>
+            </div>
+
+            <div class="grid grid-cols-3 gap-6">
+
+                <!-- Chat Messages -->
+                <div class="col-span-2">
+                    <div class="bg-white rounded-xl border border-slate-200 flex flex-col" style="height: 500px;">
+
+                        <!-- Chat Header -->
+                        <div class="p-4 border-b border-slate-200 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    <span class="text-purple-600 text-sm font-bold">OC</span>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-slate-800">OpenCode Agent</div>
+                                    <div class="flex items-center gap-1.5">
+                                        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                        <span class="text-xs text-green-600">Connected</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-slate-400 mono">sess_7a2b4c</span>
+                                <button class="px-3 py-1 border border-red-200 text-red-600 rounded text-xs hover:bg-red-50">Cerrar</button>
+                            </div>
+                        </div>
+
+                        <!-- Messages Area -->
+                        <div class="flex-1 overflow-y-auto p-4 space-y-4">
+
+                            <!-- User Message -->
+                            <div class="flex justify-end">
+                                <div class="max-w-[80%] bg-orange-500 text-white px-4 py-2.5 rounded-2xl rounded-br-sm">
+                                    <p class="text-sm">Genera una idea de video para la campaña de mayo</p>
+                                    <div class="text-xs text-orange-200 mt-1">16:32:05</div>
+                                </div>
+                            </div>
+
+                            <!-- Assistant Text -->
+                            <div class="flex justify-start">
+                                <div class="max-w-[80%] bg-slate-100 text-slate-800 px-4 py-2.5 rounded-2xl rounded-bl-sm">
+                                    <p class="text-sm">Entendido. Voy a analizar el contexto del proyecto "Promoción Mayo 2024" para generar una idea relevante...</p>
+                                    <div class="text-xs text-slate-400 mt-1">16:32:06</div>
+                                </div>
+                            </div>
+
+                            <!-- Tool Call -->
+                            <div class="flex justify-start">
+                                <div class="max-w-[80%] bg-purple-50 border border-purple-200 px-4 py-3 rounded-xl">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="px-2 py-0.5 bg-purple-200 text-purple-800 text-xs rounded font-medium">tool_call</span>
+                                        <span class="text-xs text-purple-600">fs/read_text_file</span>
+                                    </div>
+                                    <div class="mono text-xs text-slate-600 bg-white p-2 rounded border">
+                                        path: "./content/promo-mayo/README.md"<br>
+                                        lines: 45
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tool Result -->
+                            <div class="flex justify-start">
+                                <div class="max-w-[80%] bg-green-50 border border-green-200 px-4 py-3 rounded-xl">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="px-2 py-0.5 bg-green-200 text-green-800 text-xs rounded font-medium">tool_result</span>
+                                        <span class="text-xs text-green-600">fs/read_text_file</span>
+                                    </div>
+                                    <div class="text-xs text-slate-600">
+                                        Leído README.md (45 líneas). Campaña de...
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Reasoning -->
+                            <div class="flex justify-start">
+                                <div class="max-w-[80%] bg-blue-50 border border-blue-200 px-4 py-3 rounded-xl">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="px-2 py-0.5 bg-blue-200 text-blue-800 text-xs rounded font-medium">reasoning</span>
+                                    </div>
+                                    <div class="text-xs text-slate-600 italic">
+                                        "El proyecto tiene enfoque en transformación fitness. Voy a proponer un video dinámico de 30s..."
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Assistant Final -->
+                            <div class="flex justify-start">
+                                <div class="max-w-[80%] bg-slate-100 text-slate-800 px-4 py-2.5 rounded-2xl rounded-bl-sm">
+                                    <p class="text-sm font-medium mb-2">He generado la siguiente idea de video:</p>
+                                    <div class="bg-white p-3 rounded-lg border text-xs space-y-1">
+                                        <div><span class="text-slate-500">Título:</span> <span class="font-medium">Membresías 50% Off - Verano Fit</span></div>
+                                        <div><span class="text-slate-500">Escenas:</span> <span class="font-medium">3 escenas (6s c/u)</span></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Input Area -->
+                        <div class="p-4 border-t border-slate-200">
+                            <div class="flex gap-2">
+                                <input type="text" placeholder="Escribe un mensaje..." class="flex-1 px-4 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500">
+                                <button class="px-4 py-2.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Right: Event Stream -->
+                <div class="space-y-6">
+
+                    <!-- Event Log -->
+                    <div class="bg-slate-900 rounded-xl p-4" style="height: 500px; overflow-y: auto;">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-sm font-medium text-white">Event Stream</h4>
+                            <span class="text-xs text-slate-500 mono">SSE</span>
+                        </div>
+                        <div class="space-y-2 mono text-xs">
+                            <div class="text-green-400">→ connected (sess_7a2b4c)</div>
+                            <div class="text-slate-400">16:32:05 text (user)</div>
+                            <div class="text-slate-400">16:32:06 text (assistant)</div>
+                            <div class="text-purple-400">16:32:07 tool_call: fs/read_text_file</div>
+                            <div class="text-green-400">16:32:07 tool_result: fs/read_text_file</div>
+                            <div class="text-blue-400">16:32:08 reasoning</div>
+                            <div class="text-slate-400">16:32:08 text (assistant)</div>
+                            <div class="text-green-400">16:32:09 done</div>
+                        </div>
+                    </div>
+
+                    <!-- SSE Connection Info -->
+                    <div class="bg-white rounded-xl border border-slate-200 p-5 wireframe-box">
+                        <span class="wireframe-label">SSE</span>
+                        <h4 class="text-sm font-medium text-slate-700 mb-3">Conexión</h4>
+                        <div class="space-y-2 text-xs">
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">Endpoint</span>
+                                <span class="mono text-slate-700">/events/:id</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">Transport</span>
+                                <span class="text-slate-700">text/event-stream</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">Events</span>
+                                <span class="text-slate-700">9</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-200 mt-12 py-6">
+        <div class="max-w-7xl mx-auto px-4 flex items-center justify-between text-sm text-slate-500">
+            <span>Video Pipeline System • docs/artifacts/video-pipeline-wireframes</span>
+            <span class="mono text-xs">Video Pipeline Architecture</span>
+        </div>
+    </footer>
+
+</body>
+</html>

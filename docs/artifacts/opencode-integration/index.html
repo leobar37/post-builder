@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenCode Integration - Video Pipeline</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .diagram-box { filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3)); transition: all 0.3s ease; }
+        .diagram-box:hover { filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.4)); transform: translateY(-2px); }
+        .code-block { background: #0d1117; border: 1px solid #30363d; }
+        .glow-orange { box-shadow: 0 0 20px rgba(245, 126, 36, 0.3); }
+        .glow-blue { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+        .glow-purple { box-shadow: 0 0 20px rgba(168, 85, 247, 0.3); }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-200 min-h-screen" x-data="{ activeTab: 'comparison' }">
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center glow-orange">
+                    <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-white">OpenCode Integration</h1>
+                    <p class="text-sm text-slate-400">Video Pipeline System - Arquitectura de Integración</p>
+                </div>
+                <div class="ml-auto flex gap-2">
+                    <span class="px-3 py-1.5 rounded-full bg-orange-500/10 text-orange-400 text-xs font-semibold border border-orange-500/20">3 Opciones</span>
+                    <span class="px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-400 text-xs font-semibold border border-blue-500/20">Node.js</span>
+                    <span class="px-3 py-1.5 rounded-full bg-purple-500/10 text-purple-400 text-xs font-semibold border border-purple-500/20">JSON-RPC</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Navigation -->
+        <div class="flex gap-1 mb-8 bg-slate-900/50 p-1.5 rounded-xl inline-flex border border-slate-800">
+            <button @click="activeTab = 'comparison'" :class="activeTab === 'comparison' ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'" class="px-5 py-2.5 rounded-lg text-sm font-medium transition-all">Comparación</button>
+            <button @click="activeTab = 'acp'" :class="activeTab === 'acp' ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'" class="px-5 py-2.5 rounded-lg text-sm font-medium transition-all">Opción 1: ACP</button>
+            <button @click="activeTab = 'cli'" :class="activeTab === 'cli' ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'" class="px-5 py-2.5 rounded-lg text-sm font-medium transition-all">Opción 2: CLI Run</button>
+            <button @click="activeTab = 'skill'" :class="activeTab === 'skill' ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'" class="px-5 py-2.5 rounded-lg text-sm font-medium transition-all">Opción 3: Skill + HTTP</button>
+            <button @click="activeTab = 'code'" :class="activeTab === 'code' ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'" class="px-5 py-2.5 rounded-lg text-sm font-medium transition-all">Código</button>
+        </div>
+
+        <!-- Tab: Comparison -->
+        <div x-show="activeTab === 'comparison'" class="space-y-6">
+            <!-- Overview Cards -->
+            <div class="grid grid-cols-3 gap-4">
+                <!-- ACP -->
+                <div class="bg-slate-900 border border-orange-500/30 rounded-xl p-5 hover:border-orange-500/60 transition-colors">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-orange-500/20 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-white">Opción 1: ACP</h3>
+                            <p class="text-xs text-orange-400">Agent Client Protocol</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-400 mb-3">Comunicación persistente via stdin/stdout con JSON-RPC</p>
+                    <div class="space-y-1.5">
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                            <span class="text-slate-300">Sesión persistente</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                            <span class="text-slate-300">Streaming en tiempo real</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                            <span class="text-slate-300">Complejo de implementar</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-800">
+                        <span class="text-xs font-medium text-orange-400">Esfuerzo: Alto</span>
+                    </div>
+                </div>
+
+                <!-- CLI Run -->
+                <div class="bg-slate-900 border border-blue-500/30 rounded-xl p-5 hover:border-blue-500/60 transition-colors">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-white">Opción 2: CLI Run</h3>
+                            <p class="text-xs text-blue-400">One-shot Execution</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-400 mb-3">Ejecuta OpenCode con prompt, espera resultado JSON</p>
+                    <div class="space-y-1.5">
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                            <span class="text-slate-300">Simple de implementar</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                            <span class="text-slate-300">Output JSON parseable</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span>
+                            <span class="text-slate-300">Sin streaming real-time</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-800">
+                        <span class="text-xs font-medium text-blue-400">Esfuerzo: Bajo</span>
+                    </div>
+                </div>
+
+                <!-- Skill + HTTP -->
+                <div class="bg-slate-900 border border-purple-500/30 rounded-xl p-5 hover:border-purple-500/60 transition-colors">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-white">Opción 3: Skill + HTTP</h3>
+                            <p class="text-xs text-purple-400">Skill System + API Calls</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-400 mb-3">Skill de OpenCode que comunica con tu API via HTTP</p>
+                    <div class="space-y-1.5">
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                            <span class="text-slate-300">Reutilizable</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                            <span class="text-slate-300">HTTP estándar</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                            <span class="text-slate-300">Abstracción limpia</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-800">
+                        <span class="text-xs font-medium text-purple-400">Esfuerzo: Medio ★ Recomendado</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparison Table -->
+            <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-800">
+                    <h3 class="font-semibold text-white">Tabla Comparativa</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-slate-800/50">
+                            <tr>
+                                <th class="text-left px-6 py-3 text-slate-400 font-medium">Aspecto</th>
+                                <th class="text-center px-4 py-3 text-orange-400 font-medium">ACP</th>
+                                <th class="text-center px-4 py-3 text-blue-400 font-medium">CLI Run</th>
+                                <th class="text-center px-4 py-3 text-purple-400 font-medium">Skill + HTTP</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800">
+                            <tr>
+                                <td class="px-6 py-3 text-slate-300">Complejidad</td>
+                                <td class="text-center px-4 py-3"><span class="px-2 py-1 rounded bg-red-500/10 text-red-400 text-xs">Alta</span></td>
+                                <td class="text-center px-4 py-3"><span class="px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 text-xs">Baja</span></td>
+                                <td class="text-center px-4 py-3"><span class="px-2 py-1 rounded bg-yellow-500/10 text-yellow-400 text-xs">Media</span></td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-3 text-slate-300">Streaming tiempo real</td>
+                                <td class="text-center px-4 py-3"><span class="text-emerald-400">✓</span></td>
+                                <td class="text-center px-4 py-3"><span class="text-red-400">✗</span></td>
+                                <td class="text-center px-4 py-3"><span class="text-yellow-400">~</span></td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-3 text-slate-300">Estado/Persistencia</td>
+                                <td class="text-center px-4 py-3"><span class="text-emerald-400">Persistente</span></td>
+                                <td class="text-center px-4 py-3"><span class="text-slate-400">Stateless</span></td>
+                                <td class="text-center px-4 py-3"><span class="text-emerald-400">Configurable</span></td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-3 text-slate-300">Reutilización</td>
+                                <td class="text-center px-4 py-3"><span class="text-red-400">Solo tu app</span></td>
+                                <td class="text-center px-4 py-3"><span class="text-red-400">Solo tu app</span></td>
+                                <td class="text-center px-4 py-3"><span class="text-emerald-400">✓ Cualquier OpenCode</span></td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-3 text-slate-300">Implementación</td>
+                                <td class="text-center px-4 py-3 text-slate-400">JSON-RPC cliente</td>
+                                <td class="text-center px-4 py-3 text-slate-400">Spawn + parse JSON</td>
+                                <td class="text-center px-4 py-3 text-slate-400">HTTP estándar</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-3 text-slate-300">Mantener proceso vivo</td>
+                                <td class="text-center px-4 py-3"><span class="text-red-400">Sí (complejo)</span></td>
+                                <td class="text-center px-4 py-3"><span class="text-emerald-400">No</span></td>
+                                <td class="text-center px-4 py-3"><span class="text-emerald-400">No</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Recommendation -->
+            <div class="bg-gradient-to-r from-purple-900/30 to-purple-800/20 border border-purple-500/30 rounded-xl p-6">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-6 h-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-white mb-2">Recomendación: Opción 3 (Skill + HTTP)</h3>
+                        <p class="text-slate-300 text-sm mb-3">Para Video Pipeline, la Opción 3 ofrece el mejor balance entre simplicidad, mantenibilidad y capacidad de reutilización.</p>
+                        <div class="grid grid-cols-2 gap-3 text-sm">
+                            <div class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+                                <span class="text-slate-300">Skill reutilizable en cualquier proyecto OpenCode</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+                                <span class="text-slate-300">Comunicación HTTP estándar</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+                                <span class="text-slate-300">Fácil de debuggear</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+                                <span class="text-slate-300">Abstracción limpia</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: ACP -->
+        <div x-show="activeTab === 'acp'" class="space-y-6">
+            <div class="bg-slate-900 border border-orange-500/30 rounded-xl p-6">
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-orange-500/20 text-orange-400 flex items-center justify-center text-sm">1</span>
+                    Opción 1: ACP (Agent Client Protocol)
+                </h2>
+                <p class="text-slate-300 mb-6">Comunicación bidireccional persistente via stdin/stdout usando JSON-RPC. El proceso OpenCode se mantiene vivo durante toda la sesión.</p>
+
+                <!-- Architecture Diagram -->
+                <div class="overflow-x-auto mb-6">
+                    <svg viewBox="0 0 900 400" class="w-full min-w-[700px] h-auto">
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+                            </marker>
+                        </defs>
+
+                        <!-- Your API -->
+                        <g class="diagram-box">
+                            <rect x="40" y="140" width="180" height="120" rx="12" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+                            <text x="130" y="180" text-anchor="middle" fill="#60a5fa" font-size="16" font-weight="600">Tu API</text>
+                            <text x="130" y="205" text-anchor="middle" fill="#94a3b8" font-size="12">(Express + Node.js)</text>
+                            <text x="130" y="230" text-anchor="middle" fill="#64748b" font-size="11">JSON-RPC Client</text>
+                        </g>
+
+                        <!-- Bidirectional arrows -->
+                        <path d="M 230 170 L 320 170" stroke="#F57E24" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        <path d="M 320 210 L 230 210" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                        <!-- Labels -->
+                        <text x="275" y="165" text-anchor="middle" fill="#F57E24" font-size="10">stdin →</text>
+                        <text x="275" y="225" text-anchor="middle" fill="#3b82f6" font-size="10">← stdout</text>
+
+                        <!-- OpenCode ACP -->
+                        <g class="diagram-box">
+                            <rect x="330" y="110" width="200" height="160" rx="12" fill="#1e293b" stroke="#F57E24" stroke-width="2"/>
+                            <text x="430" y="145" text-anchor="middle" fill="#F57E24" font-size="16" font-weight="600">OpenCode</text>
+                            <text x="430" y="165" text-anchor="middle" fill="#F57E24" font-size="14">ACP Mode</text>
+
+                            <rect x="360" y="185" width="140" height="30" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+                            <text x="430" y="205" text-anchor="middle" fill="#94a3b8" font-size="11">nd-JSON Protocol</text>
+
+                            <circle cx="430" y="245" r="8" fill="#F57E24" opacity="0.5">
+                                <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/>
+                            </circle>
+                            <text x="430" y="270" text-anchor="middle" fill="#94a3b8" font-size="10">Proceso Persistente</text>
+                        </g>
+
+                        <!-- Methods -->
+                        <g transform="translate(570, 80)">
+                            <rect x="0" y="0" width="200" height="240" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+                            <text x="100" y="30" text-anchor="middle" fill="#94a3b8" font-size="12" font-weight="600">Métodos ACP</text>
+
+                            <text x="15" y="60" fill="#e2e8f0" font-size="11">session/new</text>
+                            <text x="15" y="85" fill="#e2e8f0" font-size="11">session/prompt</text>
+                            <text x="15" y="110" fill="#e2e8f0" font-size="11">session/update</text>
+                            <text x="15" y="135" fill="#e2e8f0" font-size="11">fs/read_text_file</text>
+                            <text x="15" y="160" fill="#e2e8f0" font-size="11">terminal/create</text>
+                            <text x="15" y="185" fill="#e2e8f0" font-size="11">terminal/output</text>
+                            <text x="15" y="210" fill="#94a3b8" font-size="10">...</text>
+                        </g>
+
+                        <!-- SQLite -->
+                        <g class="diagram-box" transform="translate(330, 320)">
+                            <rect x="0" y="0" width="200" height="50" rx="8" fill="#1e293b" stroke="#64748b" stroke-width="2"/>
+                            <text x="100" y="20" text-anchor="middle" fill="#94a3b8" font-size="12">SQLite</text>
+                            <text x="100" y="38" text-anchor="middle" fill="#64748b" font-size="10">Guarda estado de sesión</text>
+                        </g>
+                        <path d="M 430 270 L 430 320" stroke="#64748b" stroke-width="2" stroke-dasharray="4"/>
+                    </svg>
+                </div>
+
+                <!-- Code Example -->
+                <div class="code-block rounded-lg p-4 overflow-x-auto">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs text-slate-500">Tu API - JSON-RPC Client</span>
+                        <span class="text-xs text-orange-400">TypeScript</span>
+                    </div>
+                    <pre class="mono text-sm text-slate-300"><span class="text-purple-400">import</span> { spawn } <span class="text-purple-400">from</span> <span class="text-green-400">'child_process'</span>;
+
+<span class="text-purple-400">class</span> <span class="text-yellow-400">OpenCodeACPClient</span> {
+  <span class="text-purple-400">private</span> process: ChildProcess;
+  <span class="text-purple-400">private</span> requestId = <span class="text-orange-400">0</span>;
+  <span class="text-purple-400">private</span> pendingRequests = <span class="text-purple-400">new</span> <span class="text-yellow-400">Map</span>();
+
+  <span class="text-purple-400">async</span> <span class="text-blue-400">connect</span>() {
+    <span class="text-slate-500">// Inicia OpenCode en modo ACP</span>
+    <span class="text-purple-400">this</span>.process = <span class="text-blue-400">spawn</span>(<span class="text-green-400">'opencode'</span>, [<span class="text-green-400">'acp'</span>, <span class="text-green-400">'--cwd'</span>, <span class="text-green-400">'./project'</span>]);
+
+    <span class="text-slate-500">// Lee respuestas JSON-RPC de stdout</span>
+    <span class="text-purple-400">this</span>.process.stdout?.<span class="text-blue-400">on</span>(<span class="text-green-400">'data'</span>, (data) => {
+      <span class="text-purple-400">const</span> messages = data.<span class="text-blue-400">toString</span>().<span class="text-blue-400">split</span>(<span class="text-green-400">'\n'</span>).<span class="text-blue-400">filter</span>(Boolean);
+      <span class="text-purple-400">for</span> (<span class="text-purple-400">const</span> msg <span class="text-purple-400">of</span> messages) {
+        <span class="text-purple-400">const</span> response = JSON.<span class="text-blue-400">parse</span>(msg);
+        <span class="text-purple-400">this</span>.<span class="text-blue-400">handleResponse</span>(response);
+      }
+    });
+  }
+
+  <span class="text-purple-400">async</span> <span class="text-blue-400">sendPrompt</span>(prompt: <span class="text-yellow-400">string</span>) {
+    <span class="text-purple-400">const</span> id = ++<span class="text-purple-400">this</span>.requestId;
+    <span class="text-purple-400">const</span> request = {
+      jsonrpc: <span class="text-green-400">'2.0'</span>,
+      id,
+      method: <span class="text-green-400">'session/prompt'</span>,
+      params: { prompt }
+    };
+
+    <span class="text-purple-400">this</span>.process.stdin?.<span class="text-blue-400">write</span>(JSON.<span class="text-blue-400">stringify</span>(request) + <span class="text-green-400">'\n'</span>);
+
+    <span class="text-purple-400">return</span> <span class="text-purple-400">new</span> <span class="text-yellow-400">Promise</span>((resolve) => {
+      <span class="text-purple-400">this</span>.pendingRequests.<span class="text-blue-400">set</span>(id, resolve);
+    });
+  }
+}</pre>
+                </div>
+
+                <!-- Pros/Cons -->
+                <div class="grid grid-cols-2 gap-4 mt-6">
+                    <div class="bg-emerald-900/20 border border-emerald-500/30 rounded-lg p-4">
+                        <h4 class="font-medium text-emerald-400 mb-2">✓ Ventajas</h4>
+                        <ul class="space-y-1 text-sm text-slate-300">
+                            <li>• Sesión persistente con contexto</li>
+                            <li>• Streaming de respuestas en tiempo real</li>
+                            <li>• OpenCode puede leer/escribir archivos directamente</li>
+                            <li>• Comunicación bidireccional</li>
+                        </ul>
+                    </div>
+                    <div class="bg-red-900/20 border border-red-500/30 rounded-lg p-4">
+                        <h4 class="font-medium text-red-400 mb-2">✗ Desventajas</h4>
+                        <ul class="space-y-1 text-sm text-slate-300">
+                            <li>• Complejo de implementar (necesitas cliente JSON-RPC)</li>
+                            <li>• Proceso debe mantenerse vivo</li>
+                            <li>• Manejo de estado complicado</li>
+                            <li>• Reconexiones difíciles</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: CLI Run -->
+        <div x-show="activeTab === 'cli'" class="space-y-6">
+            <div class="bg-slate-900 border border-blue-500/30 rounded-xl p-6">
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center text-sm">2</span>
+                    Opción 2: CLI Run Mode
+                </h2>
+                <p class="text-slate-300 mb-6">Ejecuta OpenCode con un prompt específico, espera a que termine y captura el resultado. Cada ejecución es independiente.</p>
+
+                <!-- Architecture Diagram -->
+                <div class="overflow-x-auto mb-6">
+                    <svg viewBox="0 0 800 350" class="w-full min-w-[600px] h-auto">
+                        <defs>
+                            <marker id="arrowhead2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+                            </marker>
+                        </defs>
+
+                        <!-- Your API -->
+                        <g class="diagram-box">
+                            <rect x="40" y="125" width="180" height="100" rx="12" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+                            <text x="130" y="160" text-anchor="middle" fill="#60a5fa" font-size="16" font-weight="600">Tu API</text>
+                            <text x="130" y="185" text-anchor="middle" fill="#94a3b8" font-size="12">spawn(opencode)</text>
+                        </g>
+
+                        <!-- Arrow -->
+                        <path d="M 230 160 L 310 160" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                        <text x="270" y="150" text-anchor="middle" fill="#94a3b8" font-size="10">exec</text>
+
+                        <!-- OpenCode Run -->
+                        <g class="diagram-box">
+                            <rect x="320" y="100" width="200" height="150" rx="12" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+                            <text x="420" y="140" text-anchor="middle" fill="#60a5fa" font-size="16" font-weight="600">opencode run</text>
+
+                            <rect x="350" y="160" width="140" height="25" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+                            <text x="420" y="177" text-anchor="middle" fill="#94a3b8" font-size="10">--format json</text>
+
+                            <rect x="350" y="195" width="140" height="25" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+                            <text x="420" y="212" text-anchor="middle" fill="#94a3b8" font-size="10">One-shot execution</text>
+                        </g>
+
+                        <!-- Return arrow -->
+                        <path d="M 420 250 L 420 290 L 150 290 L 150 235" stroke="#10b981" stroke-width="2" marker-end="url(#arrowhead2)" fill="none"/>
+                        <text x="280" y="305" text-anchor="middle" fill="#10b981" font-size="10">stdout (JSON)</text>
+
+                        <!-- Result -->
+                        <g transform="translate(40, 310)">
+                            <rect x="0" y="0" width="180" height="30" rx="6" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+                            <text x="90" y="20" text-anchor="middle" fill="#10b981" font-size="11">Parse JSON → Guarda en DB</text>
+                        </g>
+                    </svg>
+                </div>
+
+                <!-- Command Examples -->
+                <div class="space-y-4 mb-6">
+                    <div class="code-block rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs text-slate-500">Comando básico</span>
+                            <span class="text-xs text-blue-400">Bash</span>
+                        </div>
+                        <pre class="mono text-sm text-slate-300">opencode run <span class="text-green-400">"Genera una idea de video para promoción de mayo"</span> \
+  --file ./content/promos \
+  --format json \
+  --title <span class="text-green-400">"video-gen-001"</span></pre>
+                    </div>
+
+                    <div class="code-block rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs text-slate-500">Con servidor attachado (evita cold start)</span>
+                            <span class="text-xs text-blue-400">Bash</span>
+                        </div>
+                        <pre class="mono text-sm text-slate-300"><span class="text-slate-500"># Terminal 1: Start server</span>
+opencode serve --port <span class="text-orange-400">4096</span>
+
+<span class="text-slate-500"># Terminal 2: Run commands</span>
+opencode run <span class="text-green-400">"Genera idea de video"</span> --attach http://localhost:<span class="text-orange-400">4096</span></pre>
+                    </div>
+                </div>
+
+                <!-- API Implementation -->
+                <div class="code-block rounded-lg p-4 overflow-x-auto">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs text-slate-500">Tu API - Ejecución</span>
+                        <span class="text-xs text-blue-400">TypeScript</span>
+                    </div>
+                    <pre class="mono text-sm text-slate-300"><span class="text-purple-400">import</span> { execa } <span class="text-purple-400">from</span> <span class="text-green-400">'execa'</span>;
+
+<span class="text-purple-400">export async function</span> <span class="text-blue-400">generateVideoIdea</span>(
+  prompt: <span class="text-yellow-400">string</span>,
+  contextPath: <span class="text-yellow-400">string</span>
+): <span class="text-yellow-400">Promise</span>&lt;VideoIdea&gt; {
+  <span class="text-purple-400">const</span> result = <span class="text-purple-400">await</span> <span class="text-blue-400">execa</span>(<span class="text-green-400">'opencode'</span>, [
+    <span class="text-green-400">'run'</span>,
+    <span class="text-green-400">'--format'</span>, <span class="text-green-400">'json'</span>,
+    <span class="text-green-400">'--file'</span>, contextPath,
+    <span class="text-green-400">'--title'</span>, <span class="text-green-400">`video-gen-${Date.now()}`</span>,
+    prompt
+  ], {
+    cwd: process.<span class="text-blue-400">cwd</span>(),
+    timeout: <span class="text-orange-400">120000</span> <span class="text-slate-500">// 2 minutos</span>
+  });
+
+  <span class="text-purple-400">return</span> JSON.<span class="text-blue-400">parse</span>(result.stdout);
+}</pre>
+                </div>
+
+                <!-- Pros/Cons -->
+                <div class="grid grid-cols-2 gap-4 mt-6">
+                    <div class="bg-emerald-900/20 border border-emerald-500/30 rounded-lg p-4">
+                        <h4 class="font-medium text-emerald-400 mb-2">✓ Ventajas</h4>
+                        <ul class="space-y-1 text-sm text-slate-300">
+                            <li>• Simple de implementar</li>
+                            <li>• Output JSON parseable</li>
+                            <li>• No requiere mantener proceso vivo</li>
+                            <li>• Cada llamada es aislada</li>
+                        </ul>
+                    </div>
+                    <div class="bg-red-900/20 border border-red-500/30 rounded-lg p-4">
+                        <h4 class="font-medium text-red-400 mb-2">✗ Desventajas</h4>
+                        <ul class="space-y-1 text-sm text-slate-300">
+                            <li>• No hay streaming en tiempo real</li>
+                            <li>• Cada llamada es stateless</li>
+                            <li>• Cold start lento (usa --attach)</li>
+                            <li>• Timeout puede ser problemático</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Skill -->
+        <div x-show="activeTab === 'skill'" class="space-y-6">
+            <div class="bg-slate-900 border border-purple-500/30 rounded-xl p-6">
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center text-sm">3</span>
+                    Opción 3: Skill + HTTP (Recomendado)
+                </h2>
+                <p class="text-slate-300 mb-6">Creas una skill de OpenCode que se comunica con tu API via HTTP. La skill actúa como puente entre OpenCode y tu sistema.</p>
+
+                <!-- Architecture Diagram -->
+                <div class="overflow-x-auto mb-6">
+                    <svg viewBox="0 0 900 450" class="w-full min-w-[700px] h-auto">
+                        <defs>
+                            <marker id="arrowhead3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+                            </marker>
+                        </defs>
+
+                        <!-- OpenCode with Skill -->
+                        <g class="diagram-box">
+                            <rect x="40" y="100" width="200" height="180" rx="12" fill="#1e293b" stroke="#a855f7" stroke-width="2"/>
+                            <text x="140" y="135" text-anchor="middle" fill="#c084fc" font-size="16" font-weight="600">OpenCode</text>
+
+                            <rect x="70" y="155" width="140" height="30" rx="6" fill="#0f172a" stroke="#a855f7" stroke-width="1"/>
+                            <text x="140" y="175" text-anchor="middle" fill="#c084fc" font-size="11">--agent video-pipeline</text>
+
+                            <rect x="70" y="195" width="140" height="30" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+                            <text x="140" y="215" text-anchor="middle" fill="#94a3b8" font-size="11">Skill System</text>
+
+                            <rect x="70" y="235" width="140" height="25" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+                            <text x="140" y="252" text-anchor="middle" fill="#94a3b8" font-size="10">HTTP Calls</text>
+                        </g>
+
+                        <!-- Arrow -->
+                        <path d="M 250 180 L 340 180" stroke="#a855f7" stroke-width="2" marker-end="url(#arrowhead3)"/>
+                        <text x="295" y="170" text-anchor="middle" fill="#a855f7" font-size="10">POST /api/videos</text>
+
+                        <!-- Your API -->
+                        <g class="diagram-box">
+                            <rect x="350" y="100" width="180" height="180" rx="12" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+                            <text x="440" y="140" text-anchor="middle" fill="#60a5fa" font-size="16" font-weight="600">Tu API</text>
+                            <text x="440" y="165" text-anchor="middle" fill="#94a3b8" font-size="12">Express + Node.js</text>
+
+                            <rect x="375" y="185" width="130" height="25" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+                            <text x="440" y="202" text-anchor="middle" fill="#94a3b8" font-size="10">POST /api/videos</text>
+
+                            <rect x="375" y="220" width="130" height="25" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+                            <text x="440" y="237" text-anchor="middle" fill="#94a3b8" font-size="10">POST /api/videos/:id/idea</text>
+                        </g>
+
+                        <!-- Arrows to other services -->
+                        <path d="M 540 150 L 620 150" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead3)"/>
+                        <path d="M 540 190 L 620 190" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead3)"/>
+                        <path d="M 540 230 L 620 230" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead3)"/>
+
+                        <!-- Services -->
+                        <g class="diagram-box">
+                            <rect x="630" y="120" width="120" height="50" rx="8" fill="#1e293b" stroke="#F57E24" stroke-width="2"/>
+                            <text x="690" y="145" text-anchor="middle" fill="#F57E24" font-size="12">MiniMax</text>
+                            <text x="690" y="160" text-anchor="middle" fill="#94a3b8" font-size="10">Video Gen</text>
+                        </g>
+
+                        <g class="diagram-box">
+                            <rect x="630" y="190" width="120" height="50" rx="8" fill="#1e293b" stroke="#64748b" stroke-width="2"/>
+                            <text x="690" y="215" text-anchor="middle" fill="#94a3b8" font-size="12">SQLite</text>
+                            <text x="690" y="230" text-anchor="middle" fill="#64748b" font-size="10">Metadatos</text>
+                        </g>
+
+                        <g class="diagram-box">
+                            <rect x="630" y="260" width="120" height="50" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="2"/>
+                            <text x="690" y="285" text-anchor="middle" fill="#10b981" font-size="12">Remotion</text>
+                            <text x="690" y="300" text-anchor="middle" fill="#64748b" font-size="10">Preview</text>
+                        </g>
+
+                        <!-- Config -->
+                        <g transform="translate(350, 320)">
+                            <rect x="0" y="0" width="180" height="40" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1"/>
+                            <text x="90" y="25" text-anchor="middle" fill="#fbbf24" font-size="12">config.yaml (paths)</text>
+                        </g>
+                        <path d="M 440 320 L 440 280" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4"/>
+                    </svg>
+                </div>
+
+                <!-- Skill Structure -->
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="code-block rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs text-slate-500">Estructura de la Skill</span>
+                            <span class="text-xs text-purple-400">File Tree</span>
+                        </div>
+                        <pre class="mono text-sm text-slate-300">.opencode/
+└── skills/
+    └── video-pipeline/
+        ├── skill.yaml
+        ├── agent.md
+        └── scripts/
+            ├── generate.sh
+            └── upload.sh</pre>
+                    </div>
+
+                    <div class="code-block rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs text-slate-500">skill.yaml</span>
+                            <span class="text-xs text-purple-400">YAML</span>
+                        </div>
+                        <pre class="mono text-sm text-slate-300"><span class="text-purple-400">name</span>: <span class="text-green-400">video-pipeline</span>
+<span class="text-purple-400">description</span>: <span class="text-green-400">|
+  Skill para integración con Video
+  Pipeline System</span>
+<span class="text-purple-400">tools</span>:
+  - http_request
+<span class="text-purple-400">endpoints</span>:
+  <span class="text-purple-400">api</span>: <span class="text-green-400">http://localhost:3458/api</span></pre>
+                    </div>
+                </div>
+
+                <!-- Complete Flow -->
+                <div class="bg-slate-800/50 rounded-lg p-5 border border-slate-700 mb-6">
+                    <h4 class="font-medium text-white mb-4">Flujo Completo Recomendado</h4>
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-3">
+                            <span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs flex-shrink-0">1</span>
+                            <p class="text-sm text-slate-300"><strong class="text-white">Usuario escribe prompt</strong> en Web UI</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs flex-shrink-0">2</span>
+                            <p class="text-sm text-slate-300"><strong class="text-white">Tu API crea registro</strong> en SQLite (estado: <code class="text-xs bg-slate-700 px-1 rounded">draft</code>)</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs flex-shrink-0">3</span>
+                            <p class="text-sm text-slate-300"><strong class="text-white">Tu API ejecuta:</strong> <code class="text-xs bg-slate-700 px-1 rounded">opencode run --agent video-pipeline "..."</code></p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs flex-shrink-0">4</span>
+                            <p class="text-sm text-slate-300"><strong class="text-white">Skill lee contexto</strong> de paths en config.yaml</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs flex-shrink-0">5</span>
+                            <p class="text-sm text-slate-300"><strong class="text-white">Skill hace POST</strong> a tu API con la idea generada</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs flex-shrink-0">6</span>
+                            <p class="text-sm text-slate-300"><strong class="text-white">Tu API actualiza SQLite</strong> y genera scenes</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="w-6 h-6 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center text-xs flex-shrink-0">7</span>
+                            <p class="text-sm text-slate-300"><strong class="text-white">Tu API inicia generación</strong> MiniMax para cada scene</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs flex-shrink-0">8</span>
+                            <p class="text-sm text-slate-300"><strong class="text-white">Progreso se muestra</strong> en Web UI via polling</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pros/Cons -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-emerald-900/20 border border-emerald-500/30 rounded-lg p-4">
+                        <h4 class="font-medium text-emerald-400 mb-2">✓ Ventajas</h4>
+                        <ul class="space-y-1 text-sm text-slate-300">
+                            <li>• Skill reutilizable en cualquier proyecto OpenCode</li>
+                            <li>• Comunicación HTTP estándar</li>
+                            <li>• Fácil de debuggear (logs HTTP)</li>
+                            <li>• Abstracción limpia</li>
+                            <li>• Desacoplado del core de tu API</li>
+                        </ul>
+                    </div>
+                    <div class="bg-yellow-900/20 border border-yellow-500/30 rounded-lg p-4">
+                        <h4 class="font-medium text-yellow-400 mb-2">⚠ Consideraciones</h4>
+                        <ul class="space-y-1 text-sm text-slate-300">
+                            <li>• Necesitas crear y mantener la skill</li>
+                            <li>• Latencia adicional por HTTP calls</li>
+                            <li>• Requiere entender el skill system de OpenCode</li>
+                            <li>• Versión de skill debe sincronizarse</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Code -->
+        <div x-show="activeTab === 'code'" class="space-y-6">
+            <!-- API Endpoints -->
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+                <h3 class="text-lg font-semibold text-white mb-4">Endpoints API Necesarios</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="code-block rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-blue-400 font-medium">GET /api/config</span>
+                            <span class="text-xs text-slate-500">Obtener config</span>
+                        </div>
+                        <p class="text-xs text-slate-400">Retorna paths y modelos configurados en config.yaml</p>
+                    </div>
+                    <div class="code-block rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-emerald-400 font-medium">POST /api/videos</span>
+                            <span class="text-xs text-slate-500">Crear video</span>
+                        </div>
+                        <p class="text-xs text-slate-400">Crea nuevo video (prompt + context_key)</p>
+                    </div>
+                    <div class="code-block rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-blue-400 font-medium">GET /api/videos/:id</span>
+                            <span class="text-xs text-slate-500">Estado</span>
+                        </div>
+                        <p class="text-xs text-slate-400">Retorna estado del video y sus clips</p>
+                    </div>
+                    <div class="code-block rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-orange-400 font-medium">POST /api/videos/:id/idea</span>
+                            <span class="text-xs text-slate-500">Recibir idea</span>
+                        </div>
+                        <p class="text-xs text-slate-400">Skill POSTea aquí la idea generada</p>
+                    </div>
+                    <div class="code-block rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-orange-400 font-medium">POST /api/videos/:id/regenerate</span>
+                            <span class="text-xs text-slate-500">Re-generar</span>
+                        </div>
+                        <p class="text-xs text-slate-400">Re-generar clip específico</p>
+                    </div>
+                    <div class="code-block rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-purple-400 font-medium">GET /api/videos/:id/preview</span>
+                            <span class="text-xs text-slate-500">Preview</span>
+                        </div>
+                        <p class="text-xs text-slate-400">URL para Remotion Player</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service Implementation -->
+            <div class="code-block rounded-lg p-5 overflow-x-auto">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-sm text-slate-400">api/services/opencode-service.ts</span>
+                    <span class="text-xs text-blue-400">TypeScript</span>
+                </div>
+                <pre class="mono text-sm text-slate-300"><span class="text-purple-400">import</span> { execa } <span class="text-purple-400">from</span> <span class="text-green-400">'execa'</span>;
+<span class="text-purple-400">import</span> { getConfig } <span class="text-purple-400">from</span> <span class="text-green-400">'./config'</span>;
+
+<span class="text-purple-400">export class</span> <span class="text-yellow-400">OpenCodeService</span> {
+  <span class="text-purple-400">async</span> <span class="text-blue-400">generateVideoIdea</span>(
+    videoId: <span class="text-yellow-400">string</span>,
+    prompt: <span class="text-yellow-400">string</span>,
+    contextKey: <span class="text-yellow-400">string</span>
+  ): <span class="text-yellow-400">Promise</span>&lt;<span class="text-yellow-400">void</span>&gt; {
+    <span class="text-purple-400">const</span> config = <span class="text-blue-400">getConfig</span>();
+    <span class="text-purple-400">const</span> contextPath = config.context.paths[contextKey];
+
+    <span class="text-slate-500">// Ejecuta OpenCode con la skill video-pipeline</span>
+    <span class="text-purple-400">const</span> result = <span class="text-purple-400">await</span> <span class="text-blue-400">execa</span>(<span class="text-green-400">'opencode'</span>, [
+      <span class="text-green-400">'run'</span>,
+      <span class="text-green-400">'--agent'</span>, <span class="text-green-400">'video-pipeline'</span>,
+      <span class="text-green-400">'--format'</span>, <span class="text-green-400">'json'</span>,
+      <span class="text-green-400">'--title'</span>, <span class="text-green-400">`video-${videoId}`</span>,
+      <span class="text-green-400">`Genera idea de video para: ${prompt}. `</span> +
+      <span class="text-green-400">`Contexto en: ${contextPath}. `</span> +
+      <span class="text-green-400">`POST resultado a /api/videos/${videoId}/idea`</span>
+    ], {
+      cwd: process.<span class="text-blue-400">cwd</span>(),
+      env: {
+        ...process.env,
+        VIDEO_PIPELINE_API_URL: <span class="text-green-400">'http://localhost:3458'</span>,
+        VIDEO_ID: videoId
+      },
+      timeout: <span class="text-orange-400">180000</span> <span class="text-slate-500">// 3 minutos</span>
+    });
+
+    console.<span class="text-blue-400">log</span>(<span class="text-green-400">'OpenCode result:'</span>, result.stdout);
+  }
+}</pre>
+            </div>
+
+            <!-- Skill Script -->
+            <div class="code-block rounded-lg p-5 overflow-x-auto">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-sm text-slate-400">.opencode/skills/video-pipeline/scripts/generate.sh</span>
+                    <span class="text-xs text-purple-400">Bash</span>
+                </div>
+                <pre class="mono text-sm text-slate-300"><span class="text-slate-500">#!/bin/bash</span>
+<span class="text-slate-500"># Script llamado por la skill para comunicar resultado a la API</span>
+
+<span class="text-purple-400">set</span> -e
+
+<span class="text-blue-400">API_URL</span>=<span class="text-green-400">"${VIDEO_PIPELINE_API_URL:-http://localhost:3458}"</span>
+<span class="text-blue-400">VIDEO_ID</span>=<span class="text-green-400">"${VIDEO_ID}"</span>
+<span class="text-blue-400">IDEA_JSON</span>=<span class="text-green-400">"${1}"</span>
+
+<span class="text-slate-500"># Enviar idea generada a la API</span>
+curl -X POST <span class="text-green-400">"${API_URL}/api/videos/${VIDEO_ID}/idea"</span> \
+  -H <span class="text-green-400">"Content-Type: application/json"</span> \
+  -d <span class="text-green-400">"${IDEA_JSON}"</span> \
+  --silent \
+  --show-error
+
+echo <span class="text-green-400">"Idea enviada a API exitosamente"</span></pre>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Alpine.js handles tab switching
+    </script>
+</body>
+</html>
