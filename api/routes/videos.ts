@@ -1,78 +1,53 @@
-import { Router } from 'express';
-import { VideoQueries, SceneQueries } from '../db/client';
-import { VideoService } from '../services/video-service';
+import { Router, type Request, type Response } from 'express';
+import { z } from 'zod';
+import { getVideoService } from '../services/video.service.js';
+import { getSceneRepository } from '../db/repositories/index.js';
+import type { VideoStatus } from '../types/index.js';
 
 const router = Router();
-const videoService = new VideoService();
+const videoService = getVideoService();
 
-router.post('/', async (req, res) => {
-  try {
-    const { postId } = req.body;
-
-    if (!postId) {
-      return res.status(400).json({ error: 'postId is required' });
-    }
-
-    const video = await videoService.createFromPost(postId);
-
-    res.status(201).json({
-      videoId: video.id,
-      postId: video.post_id,
-      title: video.title,
-      status: video.status,
-      totalScenes: video.total_scenes,
-      scenes: video.scenes,
-    });
-  } catch (error) {
-    console.error('Error creating video:', error);
-    res.status(500).json({ error: 'Failed to create video' });
-  }
+const createVideoSchema = z.object({
+  prompt: z.string().min(1),
 });
 
-router.get('/', (req, res) => {
+// GET /api/videos
+router.get('/', (req: Request, res: Response) => {
   try {
     const { status } = req.query;
-    const videos = VideoQueries.getAll(status as string);
-    res.json(videos);
-  } catch (error) {
-    console.error('Error fetching videos:', error);
-    res.status(500).json({ error: 'Failed to fetch videos' });
+    const result = videoService.getAll(status as VideoStatus | undefined);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
   }
 });
 
-router.get('/:id', (req, res) => {
+// GET /api/videos/:id
+router.get('/:id', (req: Request, res: Response) => {
   try {
-    const video = VideoQueries.getById(req.params.id);
-
+    const video = videoService.getByIdWithScenes(req.params.id);
     if (!video) {
-      return res.status(404).json({ error: 'Video not found' });
+      res.status(404).json({ success: false, error: 'Video not found' });
+      return;
     }
-
-    const scenes = SceneQueries.getByVideoId(video.id);
-
-    res.json({
-      ...video,
-      scenes,
-    });
-  } catch (error) {
-    console.error('Error fetching video:', error);
-    res.status(500).json({ error: 'Failed to fetch video' });
+    res.json(video);
+  } catch (err) {
+    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
   }
 });
 
-router.get('/:id/status', (req, res) => {
+// GET /api/videos/:id/status
+router.get('/:id/status', (req: Request, res: Response) => {
   try {
-    const video = VideoQueries.getById(req.params.id);
-
+    const video = videoService.getById(req.params.id);
     if (!video) {
-      return res.status(404).json({ error: 'Video not found' });
+      res.status(404).json({ success: false, error: 'Video not found' });
+      return;
     }
 
-    const scenes = SceneQueries.getByVideoId(video.id);
-    const completedScenes = scenes.filter((s) => s.status === 'completed').length;
-
-    const progress =
-      video.total_scenes > 0 ? Math.round((completedScenes / video.total_scenes) * 100) : 0;
+    const scenes = getSceneRepository().getByVideoId(video.id);
+    const completedScenes = scenes.filter((s) => s.minimax_status === 'success').length;
+    const progress = video.total_scenes > 0 ? Math.round((completedScenes / video.total_scenes) * 100) : 0;
 
     res.json({
       videoId: video.id,
@@ -83,68 +58,89 @@ router.get('/:id/status', (req, res) => {
       scenes: scenes.map((s) => ({
         id: s.id,
         sequence: s.sequence,
-        name: s.name,
-        status: s.status,
+        description: s.description,
+        status: s.minimax_status,
         duration: s.duration,
       })),
     });
-  } catch (error) {
-    console.error('Error fetching status:', error);
-    res.status(500).json({ error: 'Failed to fetch status' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
   }
 });
 
-router.post('/:id/render', async (req, res) => {
+// POST /api/videos/:id/approve
+router.post('/:id/approve', async (req: Request, res: Response) => {
   try {
-    const video = VideoQueries.getById(req.params.id);
-
-    if (!video) {
-      return res.status(404).json({ error: 'Video not found' });
+    const video = await videoService.approveIdea(req.params.id);
+    res.json({ success: true, video });
+  } catch (err) {
+    if (err instanceof Error && err.message.includes('not found')) {
+      res.status(404).json({ success: false, error: err.message });
+    } else if (err instanceof Error && err.message.includes('Cannot approve')) {
+      res.status(409).json({ success: false, error: err.message });
+    } else {
+      res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
     }
-
-    VideoQueries.updateStatus(video.id, 'rendering');
-
-    res.json({
-      videoId: video.id,
-      status: 'rendering',
-      message: 'Rendering started',
-    });
-
-    videoService.renderVideo(video.id).catch((error) => {
-      console.error('Error rendering video:', error);
-      VideoQueries.updateStatus(video.id, 'failed');
-    });
-  } catch (error) {
-    console.error('Error starting render:', error);
-    res.status(500).json({ error: 'Failed to start render' });
   }
 });
 
-router.post('/:id/build', async (req, res) => {
+// POST /api/videos/:id/render
+router.post('/:id/render', async (req: Request, res: Response) => {
+  try {
+    const video = await videoService.startRender(req.params.id);
+    res.json({ success: true, video });
+  } catch (err) {
+    if (err instanceof Error && err.message.includes('not found')) {
+      res.status(404).json({ success: false, error: err.message });
+    } else if (err instanceof Error && err.message.includes('Cannot render')) {
+      res.status(409).json({ success: false, error: err.message });
+    } else {
+      res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+    }
+  }
+});
+
+// POST /api/videos/:id/build
+router.post('/:id/build', async (req: Request, res: Response) => {
   try {
     const result = await videoService.buildFinalVideo(req.params.id);
-    res.json(result);
-  } catch (error) {
-    console.error('Error building video:', error);
-    res.status(500).json({
-      error: error instanceof Error ? error.message : 'Failed to build video',
-    });
+    res.json({ success: true, ...result });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
   }
 });
 
-router.get('/:id/download', (req, res) => {
+// GET /api/videos/:id/download
+router.get('/:id/download', (req: Request, res: Response) => {
   try {
-    const video = VideoQueries.getById(req.params.id);
-
+    const video = videoService.getById(req.params.id);
     if (!video) {
-      return res.status(404).json({ error: 'Video not found' });
+      res.status(404).json({ success: false, error: 'Video not found' });
+      return;
     }
 
-    const outputPath = `./videos/${video.id}/output/reel-final.mp4`;
-    res.download(outputPath, `reel-${video.id}.mp4`);
-  } catch (error) {
-    console.error('Error downloading video:', error);
-    res.status(500).json({ error: 'Failed to download video' });
+    if (!video.output_path) {
+      res.status(404).json({ success: false, error: 'Video not yet built' });
+      return;
+    }
+
+    res.download(video.output_path, `video-${video.id}.mp4`);
+  } catch (err) {
+    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+  }
+});
+
+// DELETE /api/videos/:id
+router.delete('/:id', (req: Request, res: Response) => {
+  try {
+    videoService.delete(req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    if (err instanceof Error && err.message.includes('not found')) {
+      res.status(404).json({ success: false, error: err.message });
+    } else {
+      res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+    }
   }
 });
 

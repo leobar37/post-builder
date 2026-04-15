@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "plan": "multi-agent-scene-architecture",
+  "mode": "structured",
+  "requirementsFile": "requirements.md",
+  "taskIndexFile": "task-index.md",
+  "tasks": [
+    {
+      "id": "T-001",
+      "title": "Create AgentFactory",
+      "file": "tasks/01-create-agent-factory.md",
+      "status": "pending",
+      "phase": "foundation",
+      "dependencies": [],
+      "requirements": ["FR-001"]
+    },
+    {
+      "id": "T-002",
+      "title": "Create Scene Agents",
+      "file": "tasks/02-create-scene-agents.md",
+      "status": "pending",
+      "phase": "agents",
+      "dependencies": ["T-001"],
+      "requirements": ["FR-002", "FR-003", "FR-004", "FR-005", "FR-009"]
+    },
+    {
+      "id": "T-003",
+      "title": "Update SessionManager",
+      "file": "tasks/03-update-session-management.md",
+      "status": "pending",
+      "phase": "session",
+      "dependencies": ["T-001"],
+      "requirements": ["FR-006", "FR-007", "FR-008"]
+    },
+    {
+      "id": "T-004",
+      "title": "Update Entities and Schema",
+      "file": "tasks/04-update-entities-schema.md",
+      "status": "pending",
+      "phase": "data",
+      "dependencies": ["T-003"],
+      "requirements": ["FR-011", "FR-012", "NFR-001"]
+    },
+    {
+      "id": "T-005",
+      "title": "Update Agent Routes",
+      "file": "tasks/05-update-routes.md",
+      "status": "pending",
+      "phase": "routes",
+      "dependencies": ["T-001", "T-002", "T-003"],
+      "requirements": ["FR-001", "FR-010", "NFR-001"]
+    }
+  ]
+}

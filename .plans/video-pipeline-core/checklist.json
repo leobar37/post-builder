@@ -1,0 +1,75 @@
+{
+  "planName": "video-pipeline-core",
+  "version": "1.0.0",
+  "tasks": [
+    {
+      "id": "T-001",
+      "title": "Core Infrastructure",
+      "file": "tasks/01-core-infrastructure.md",
+      "status": "completed",
+      "dependencies": []
+    },
+    {
+      "id": "T-002",
+      "title": "Utilities",
+      "file": "tasks/02-utilities.md",
+      "status": "completed",
+      "dependencies": [
+        "T-001"
+      ]
+    },
+    {
+      "id": "T-003",
+      "title": "OpenCode SDK",
+      "file": "tasks/03-opencode-sdk.md",
+      "status": "completed",
+      "dependencies": [
+        "T-001",
+        "T-002"
+      ]
+    },
+    {
+      "id": "T-004",
+      "title": "Session Manager",
+      "file": "tasks/04-session-manager.md",
+      "status": "completed",
+      "dependencies": [
+        "T-003"
+      ]
+    },
+    {
+      "id": "T-005",
+      "title": "Event Bus",
+      "file": "tasks/05-event-bus.md",
+      "status": "completed",
+      "dependencies": [
+        "T-001"
+      ]
+    },
+    {
+      "id": "T-006",
+      "title": "FFmpeg Wrapper",
+      "file": "tasks/06-ffmpeg-wrapper.md",
+      "status": "completed",
+      "dependencies": [
+        "T-002"
+      ]
+    },
+    {
+      "id": "T-007",
+      "title": "Scene Planning Base",
+      "file": "tasks/07-scene-planning.md",
+      "status": "completed",
+      "dependencies": [
+        "T-005"
+      ]
+    },
+    {
+      "id": "T-008",
+      "title": "Folder Structure",
+      "file": "tasks/08-folder-structure.md",
+      "status": "completed",
+      "dependencies": []
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "plan": "dark-mode-ui",
+  "mode": "structured",
+  "requirementsFile": "requirements.md",
+  "taskIndexFile": "task-index.md",
+  "tasks": [
+    {
+      "id": "T-001",
+      "title": "Foundation: Tailwind Vite Setup",
+      "file": "tasks/01-foundation-tailwind-vite-setup.md",
+      "status": "completed",
+      "phase": "foundation",
+      "dependencies": [],
+      "requirements": [
+        "FR-001",
+        "FR-003",
+        "NFR-003"
+      ]
+    },
+    {
+      "id": "T-002",
+      "title": "Dark Design Tokens and Global Styles",
+      "file": "tasks/02-dark-design-tokens.md",
+      "status": "completed",
+      "phase": "design-system",
+      "dependencies": [
+        "T-001"
+      ],
+      "requirements": [
+        "FR-002",
+        "FR-011",
+        "FR-012"
+      ]
+    },
+    {
+      "id": "T-003",
+      "title": "Refactor Layout Components",
+      "file": "tasks/03-refactor-layout-components.md",
+      "status": "completed",
+      "phase": "components",
+      "dependencies": [
+        "T-002"
+      ],
+      "requirements": [
+        "FR-004"
+      ]
+    },
+    {
+      "id": "T-004",
+      "title": "Refactor Project Components",
+      "file": "tasks/04-refactor-project-components.md",
+      "status": "completed",
+      "phase": "components",
+      "dependencies": [
+        "T-002"
+      ],
+      "requirements": [
+        "FR-005",
+        "FR-010"
+      ]
+    },
+    {
+      "id": "T-005",
+      "title": "Refactor Video Components",
+      "file": "tasks/05-refactor-video-components.md",
+      "status": "completed",
+      "phase": "components",
+      "dependencies": [
+        "T-002"
+      ],
+      "requirements": [
+        "FR-006"
+      ]
+    },
+    {
+      "id": "T-006",
+      "title": "Refactor Modal Components",
+      "file": "tasks/06-refactor-modal-components.md",
+      "status": "completed",
+      "phase": "components",
+      "dependencies": [
+        "T-002"
+      ],
+      "requirements": [
+        "FR-007"
+      ]
+    },
+    {
+      "id": "T-007",
+      "title": "Refactor Pipeline Components",
+      "file": "tasks/07-refactor-pipeline-components.md",
+      "status": "completed",
+      "phase": "components",
+      "dependencies": [
+        "T-002"
+      ],
+      "requirements": [
+        "FR-008"
+      ]
+    },
+    {
+      "id": "T-008",
+      "title": "Refactor Chat Components",
+      "file": "tasks/08-refactor-chat-components.md",
+      "status": "completed",
+      "phase": "components",
+      "dependencies": [
+        "T-002"
+      ],
+      "requirements": [
+        "FR-009"
+      ]
+    }
+  ]
+}

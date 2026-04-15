@@ -1,0 +1,66 @@
+{
+  "plan": "video-editor-agent",
+  "version": "1.0.0",
+  "tasks": [
+    {
+      "id": "T-001",
+      "name": "Bootstrap Hono API",
+      "status": "completed",
+      "dependencies": []
+    },
+    {
+      "id": "T-002",
+      "name": "Agent Core Infrastructure",
+      "status": "completed",
+      "dependencies": ["T-001"]
+    },
+    {
+      "id": "T-003",
+      "name": "VideoEditorAgent Implementation",
+      "status": "completed",
+      "dependencies": ["T-002"]
+    },
+    {
+      "id": "T-004",
+      "name": "OpenCode Tool Integration",
+      "status": "completed",
+      "dependencies": ["T-003"]
+    },
+    {
+      "id": "T-005",
+      "name": "Session Management System",
+      "status": "completed",
+      "dependencies": ["T-002"]
+    },
+    {
+      "id": "T-006",
+      "name": "Agent API Routes (Hono)",
+      "status": "completed",
+      "dependencies": ["T-003", "T-005"]
+    },
+    {
+      "id": "T-007",
+      "name": "TanStack Query + Frontend Hook",
+      "status": "completed",
+      "dependencies": ["T-006"]
+    },
+    {
+      "id": "T-008",
+      "name": "Frontend Chat UI",
+      "status": "completed",
+      "dependencies": ["T-007"]
+    },
+    {
+      "id": "T-009",
+      "name": "Migration Strategy Express→Hono",
+      "status": "completed",
+      "dependencies": ["T-001", "T-006"]
+    },
+    {
+      "id": "T-010",
+      "name": "Testing & Validation",
+      "status": "pending",
+      "dependencies": ["T-004", "T-008"]
+    }
+  ]
+}

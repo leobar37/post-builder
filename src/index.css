@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand */
+  --color-gs-orange: #F57E24;
+  --color-gs-orange-light: #FF9144;
+  --color-gs-orange-dark: #E56614;
+  --color-gs-dark: #2D3C53;
+  --color-gs-dark-light: #3D4C63;
+  --color-gs-dark-darker: #1D2C43;
+
+  /* Dark UI surfaces */
+  --color-ui-bg-primary: #0f1117;
+  --color-ui-bg-secondary: #1a1d27;
+  --color-ui-bg-card: #252836;
+  --color-ui-bg-input: #1f2937;
+  --color-ui-bg-hover: #2a2d3a;
+  --color-ui-border: #2a2d3a;
+  --color-ui-border-subtle: #1f2937;
+
+  /* Text */
+  --color-ui-text-primary: #f9fafb;
+  --color-ui-text-secondary: #9ca3af;
+  --color-ui-text-muted: #6b7280;
+
+  /* Fonts */
+  --font-display: 'Sora', sans-serif;
+  --font-body: 'Manrope', sans-serif;
+}
+
+/* Base resets */
+* {
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+html {
+  background-color: var(--color-ui-bg-primary);
+}
+
+body {
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-ui-bg-primary);
+  color: var(--color-ui-text-primary);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-ui-bg-secondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-ui-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ui-text-muted);
+}
+
+/* Focus ring */
+*:focus-visible {
+  outline: 2px solid var(--color-gs-orange);
+  outline-offset: 2px;
+}
+
+/* Line clamp */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Animation */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "plan": "pve-jerarquia",
+  "tasks": [
+    { "id": "T-001", "status": "completed", "name": "Definir tipos request/response centralizados" },
+    { "id": "T-002", "status": "completed", "name": "EventService — event bus + SSE helper" },
+    { "id": "T-003", "status": "completed", "name": "ProjectService — lógica de negocio de projects" },
+    { "id": "T-004", "status": "completed", "name": "SceneService — lógica de scenes" },
+    { "id": "T-005", "status": "completed", "name": "VideoService — refactor con jerarquía y OpenCode" },
+    { "id": "T-006", "status": "completed", "name": "ProjectsRouter — CRUD projects" },
+    { "id": "T-007", "status": "completed", "name": "VideosRouter — nested bajo projects" },
+    { "id": "T-008", "status": "completed", "name": "ScenesRouter — operaciones individuales" },
+    { "id": "T-009", "status": "completed", "name": "EventsRouter — SSE endpoint" },
+    { "id": "T-010", "status": "completed", "name": "Wiring — montar routers en api/index.ts" }
+  ],
+  "created": "2026-04-09",
+  "completed": "2026-04-09"
+}
+</content>
+</invoke>

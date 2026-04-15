@@ -3,22 +3,8 @@
 import { Router, type Request, type Response } from 'express';
 import { getBrowserlessService } from '../services/browserless.service';
 import type { ExportRequest } from '../types/export.types';
-import { readFileSync } from 'fs';
-import { join } from 'path';
 
 const router = Router();
-
-// Read CSS files once at startup
-const baseCss = readFileSync(join(process.cwd(), 'src', 'base.css'), 'utf-8');
-const componentsCss = readFileSync(join(process.cwd(), 'src', 'components.css'), 'utf-8');
-
-function inlineCss(html: string): string {
-  // Replace link tags with inline styles
-  const css = `${baseCss}\n${componentsCss}`;
-  return html
-    .replace(/<link[^>]*rel=["']stylesheet["'][^>]*href=["']\/src\/[^"']*\.css["'][^>]*>/g, '')
-    .replace('</head>', `<style>${css}</style></head>`);
-}
 
 router.post('/', async (req: Request, res: Response) => {
   try {
@@ -32,20 +18,17 @@ router.post('/', async (req: Request, res: Response) => {
       return;
     }
 
-    // Inline CSS before sending to Browserless
-    const processedHtml = inlineCss(html);
-
     const browserlessService = getBrowserlessService();
     let buffer: Buffer;
 
     if (format === 'pdf') {
-      buffer = await browserlessService.htmlToPdf(processedHtml, {
+      buffer = await browserlessService.htmlToPdf(html, {
         width: `${width}px`,
         height: `${height}px`,
         printBackground: true,
       });
     } else {
-      buffer = await browserlessService.htmlToImage(processedHtml, {
+      buffer = await browserlessService.htmlToImage(html, {
         type: 'png',
         width,
         height,

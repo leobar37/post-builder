@@ -1,0 +1,78 @@
+{
+  "planName": "acp-sdk-structured-output",
+  "version": "1.0.0",
+  "tasks": [
+    {
+      "id": "T-001",
+      "title": "Install ACP SDK",
+      "file": "tasks/01-install-acp-sdk.md",
+      "status": "completed",
+      "dependencies": []
+    },
+    {
+      "id": "T-002",
+      "title": "Refactor AcpClient",
+      "file": "tasks/02-refactor-acp-client.md",
+      "status": "completed",
+      "dependencies": [
+        "T-001"
+      ]
+    },
+    {
+      "id": "T-003",
+      "title": "Update OpenCodeSDK",
+      "file": "tasks/03-update-opencode-sdk.md",
+      "status": "completed",
+      "dependencies": [
+        "T-002"
+      ]
+    },
+    {
+      "id": "T-004",
+      "title": "Add Structured Types",
+      "file": "tasks/04-add-structured-types.md",
+      "status": "completed",
+      "dependencies": [
+        "T-001"
+      ]
+    },
+    {
+      "id": "T-005",
+      "title": "Implement Structured Prompt",
+      "file": "tasks/05-implement-structured-prompt.md",
+      "status": "completed",
+      "dependencies": [
+        "T-003",
+        "T-004"
+      ]
+    },
+    {
+      "id": "T-006",
+      "title": "Add JSON Validation",
+      "file": "tasks/06-add-json-validation.md",
+      "status": "completed",
+      "dependencies": [
+        "T-004"
+      ]
+    },
+    {
+      "id": "T-007",
+      "title": "Update Exports",
+      "file": "tasks/07-update-exports.md",
+      "status": "completed",
+      "dependencies": [
+        "T-005",
+        "T-006"
+      ]
+    },
+    {
+      "id": "T-008",
+      "title": "Validate Typecheck",
+      "file": "tasks/08-validate-typecheck.md",
+      "status": "completed",
+      "dependencies": [
+        "T-007"
+      ]
+    }
+  ]
+}

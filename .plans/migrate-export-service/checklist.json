@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "plan": "migrate-export-service",
+  "mode": "structured",
+  "requirementsFile": "requirements.md",
+  "taskIndexFile": "task-index.md",
+  "tasks": [
+    {
+      "id": "T-001",
+      "title": "Fix export routes CSS",
+      "file": "tasks/01-fix-export-routes-css.md",
+      "status": "completed",
+      "phase": "foundation",
+      "dependencies": [],
+      "requirements": [
+        "FR-001",
+        "FR-002",
+        "FR-005"
+      ]
+    },
+    {
+      "id": "T-002",
+      "title": "Cleanup App.tsx",
+      "file": "tasks/02-cleanup-app-tsx.md",
+      "status": "completed",
+      "phase": "cleanup",
+      "dependencies": [],
+      "requirements": [
+        "NFR-002"
+      ]
+    },
+    {
+      "id": "T-003",
+      "title": "Verify projects CRUD",
+      "file": "tasks/03-verify-projects-crud.md",
+      "status": "completed",
+      "phase": "verification",
+      "dependencies": [
+        "T-001"
+      ],
+      "requirements": [
+        "FR-003"
+      ]
+    },
+    {
+      "id": "T-004",
+      "title": "Verify videos CRUD",
+      "file": "tasks/04-verify-videos-crud.md",
+      "status": "completed",
+      "phase": "verification",
+      "dependencies": [
+        "T-001",
+        "T-003"
+      ],
+      "requirements": [
+        "FR-004"
+      ]
+    }
+  ]
+}

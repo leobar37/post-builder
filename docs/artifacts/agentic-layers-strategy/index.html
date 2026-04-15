@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estrategia Agentica - Capas de Generación</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .layer-card { transition: all 0.3s ease; }
+    .layer-card:hover { transform: translateY(-4px); }
+    .flow-arrow { animation: flow 2s ease-in-out infinite; }
+    @keyframes flow {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+    .agent-pulse { animation: pulse-agent 3s ease-in-out infinite; }
+    @keyframes pulse-agent {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(245, 126, 36, 0.4); }
+      50% { box-shadow: 0 0 0 20px rgba(245, 126, 36, 0); }
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-bold bg-gradient-to-r from-orange-400 to-pink-400 bg-clip-text text-transparent">
+            Arquitectura Agentica
+          </h1>
+          <p class="text-slate-400 text-sm mt-1">Estrategia de capas para generación de video</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="px-3 py-1 bg-orange-500/20 text-orange-400 rounded-full text-xs font-medium border border-orange-500/30">
+            Multi-Agent
+          </span>
+          <span class="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-xs font-medium border border-purple-500/30">
+            Feedback Loop
+          </span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-6 py-8">
+
+    <!-- Vision Estrategica -->
+    <section class="mb-12">
+      <div class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-8 border border-slate-700">
+        <h2 class="text-xl font-semibold mb-4 flex items-center gap-3">
+          <i data-lucide="target" class="w-6 h-6 text-orange-400"></i>
+          Vision Estratégica
+        </h2>
+        <p class="text-slate-300 leading-relaxed max-w-4xl">
+          Cada <strong class="text-orange-400">capa (layer)</strong> es un agente especializado con su propia estrategia de prompting,
+          consulta a IA y método de integración. Los agentes no son pasos secuenciales rígidos, sino
+          <strong class="text-purple-400">nodos en un grafo de decisión</strong> que pueden iterar, bifurcar y converger
+          basándose en feedback del usuario o de otros agentes.
+        </p>
+      </div>
+    </section>
+
+    <!-- Las 4 Capas Principales -->
+    <section class="mb-12">
+      <h2 class="text-lg font-semibold mb-6 text-slate-400 uppercase tracking-wider">Las 4 Capas Agenticas</h2>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- Layer 1: Concepto -->
+        <div class="layer-card bg-slate-900 rounded-xl p-6 border border-slate-700 hover:border-orange-500/50">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center text-xl font-bold">
+                1
+              </div>
+              <div>
+                <h3 class="font-semibold text-lg">Concept Layer</h3>
+                <p class="text-slate-400 text-sm">Agente Director Creativo</p>
+              </div>
+            </div>
+            <span class="px-2 py-1 bg-orange-500/20 text-orange-400 text-xs rounded border border-orange-500/30">OpenCode</span>
+          </div>
+
+          <div class="space-y-4">
+            <div class="bg-slate-800/50 rounded-lg p-4">
+              <h4 class="text-xs font-medium text-slate-500 uppercase mb-2">Estrategia de Prompting</h4>
+              <ul class="text-sm text-slate-300 space-y-1">
+                <li class="flex items-start gap-2">
+                  <i data-lucide="check-circle" class="w-4 h-4 text-green-400 mt-0.5 shrink-0"></i>
+                  <span><strong>Contexto jerárquico:</strong> Project → Video → brief del usuario</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i data-lucide="check-circle" class="w-4 h-4 text-green-400 mt-0.5 shrink-0"></i>
+                  <span><strong>Output estructurado:</strong> JSON con título, descripción, arco narrativo</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i data-lucide="check-circle" class="w-4 h-4 text-green-400 mt-0.5 shrink-0"></i>
+                  <span><strong>Few-shot:</strong> Ejemplos de videos exitosos del mismo proyecto</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="bg-slate-800/50 rounded-lg p-4">
+              <h4 class="text-xs font-medium text-slate-500 uppercase mb-2">Decisiones del Agente</h4>
+              <div class="flex flex-wrap gap-2">
+                <span class="px-2 py-1 bg-slate-700 rounded text-xs">Número de escenas</span>
+                <span class="px-2 py-1 bg-slate-700 rounded text-xs">Duración total</span>
+                <span class="px-2 py-1 bg-slate-700 rounded text-xs">Arco emocional</span>
+                <span class="px-2 py-1 bg-slate-700 rounded text-xs">CTA strategy</span>
+              </div>
+            </div>
+
+            <div class="border-t border-slate-700 pt-4">
+              <h4 class="text-xs font-medium text-slate-500 uppercase mb-2">→ Entrega a Layer 2</h4>
+              <code class="text-xs bg-slate-950 p-2 rounded block text-green-400">
+                { concept, scenes: [{description, emotion, duration}] }
+              </code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layer 2: Prompt Engineering -->
+        <div class="layer-card bg-slate-900 rounded-xl p-6 border border-slate-700 hover:border-blue-500/50">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center text-xl font-bold">
+                2
+              </div>
+              <div>
+                <h3 class="font-semibold text-lg">Prompt Layer</h3>
+                <p class="text-slate-400 text-sm">Agente Prompt Engineer</p>
+              </div>
+            </div>
+            <span class="px-2 py-1 bg-blue-500/20 text-blue-400 text-xs rounded border border-blue-500/30">OpenCode</span>
+          </div>
+
+          <div class="space-y-4">
+            <div class="bg-slate-800/50 rounded-lg p-4">
+              <h4 class="text-xs font-medium text-slate-500 uppercase mb-2">Estrategia de Prompting</h4>
+              <ul class="text-sm text-slate-300 space-y-1">
+                <li class="flex items-start gap-2">
+                  <i data-lucide="check-circle" class="w-4 h-4 text-green-400 mt-0.5 shrink-0"></i>
+                  <span><strong>Meta-prompting:</strong> "Eres un experto en MiniMax prompts..."</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i data-lucide="check-circle" class="w-4 h-4 text-green-400 mt-0.5 shrink-0"></i>
+                  <span><strong>Video-native:</strong> Términos de cámara, movimiento, luz</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i data-lucide="check-circle" class="w-4 h-4 text-green-400 mt-0.5 shrink-0"></i>
+                  <span><strong>Negative prompts:</strong> Qué evitar en la generación</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="bg-slate-800/50 rounded-lg p-4">
+              <h4 class="text-xs font-medium text-slate-500 uppercase mb-2">Decisiones del Agente</h4>
+              <div class="flex flex-wrap gap-2">
+                <span class="px-2 py-1 bg-slate-700 rounded text-xs">Estilo visual</span>
+                <span class="px-2 py-1 bg-slate-700 rounded text-xs">Movimiento de cámara</span>
+                <span class="px-2 py-1 bg-slate-700 rounded text-xs">Color grading</span>
+                <span class="px-2 py-1 bg-slate-700 rounded text-xs">Prompt negativo</span>
+              </div>
+            </div>
+
+            <div class="border-t border-slate-700 pt-4">
+              <h4 class="text-xs font-medium text-slate-500 uppercase mb-2">→ Entrega a Layer 3</h4>
+              <code class="text-xs bg-slate-950 p-2 rounded block text-blue-400">
+                { minimax_prompt, negative_prompt, style_params }
+              </code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layer 3: Generación de Video -->
+        <div class="layer-card bg-slate-900 rounded-xl p-6 border border-slate-700 hover:border-purple-500/50">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center text-xl font-bold">
+                3
+              </div>
+              <div>
+                <h3 class="font-semibold text-lg">Generation Layer</h3>
+                <p class="text-slate-400 text-sm">Agente Ejecutor (MiniMax)</p>
+              </div>
+            </div>
+            <span class="px-2 py-1 bg-purple-500/20 text-purple-400 text-xs rounded border border-purple-500/30">MiniMax API</span>
+          </div>
+
+          <div class="space-y-4">
+            <div class="bg-slate-800/50 rounded-lg p-4">
+              <h4 class="text-xs font-medium text-slate-500 uppercase mb-2">Estrategia de Generación</h4>
+              <ul class="text-sm text-slate-300 space-y-1">
+                <li class="flex items-start gap-2">
+                  <i data-lucide="check-circle" class="w-4 h-4 text-green-400 mt-0.5 shrink-0"></i>
+                  <span><strong>Async polling:</strong> Cola de generación con retry</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i data-lucide="check-circle" class="w-4 h-4 text-green-400 mt-0.5 shrink-0"></i>
+                  <span><strong>Quality gate:</strong> Validación del output (duración, calidad)</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i data-lucide="check-circle" class="w-4 h-4 text-green-400 mt-0.5 shrink-0"></i>
+                  <span><strong>Auto-iterate:</strong> Si falla, consulta a Layer 2 para ajustar prompt</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="bg-slate-800/50 rounded-lg p-4">
+              <h4 class="text-xs font-medium text-slate-500 uppercase mb-2">Decisiones Autónomas</h4>
+              <div class="flex flex-wrap gap-2">
+                <span class="px-2 py-1 bg-slate-700 rounded text-xs">Retry con variación</span>
+                <span class="px-2 py-1 bg-slate-700 rounded text-xs">Split escena larga</span>
+                <span class="px-2 py-1 bg-slate-700 rounded text-xs">Upscale si es fuzzy</span>
+              </div>
+            </div>
+
+            <div class="border-t border-slate-700 pt-4">
+              <h4 class="text-xs font-medium text-slate-500 uppercase mb-2">→ Entrega a Layer 4</h4>
+              <code class="text-xs bg-slate-950 p-2 rounded block text-purple-400">
+                { clip_path, metadata: {duration, resolution, quality_score} }
+              </code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layer 4: Composición -->
+        <div class="layer-card bg-slate-900 rounded-xl p-6 border border-slate-700 hover:border-green-500/50">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center text-xl font-bold">
+                4
+              </div>
+              <div>
+                <h3 class="font-semibold text-lg">Composition Layer</h3>
+                <p class="text-slate-400 text-sm">Agente Post-Productor</p>
+              </div>
+            </div>
+            <div class="flex gap-1">
+              <span class="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded border border-green-500/30">Remotion</span>
+              <span class="px-2 py-1 bg-yellow-500/20 text-yellow-400 text-xs rounded border border-yellow-500/30">FFmpeg</span>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="bg-slate-800/50 rounded-lg p-4">
+              <h4 class="text-xs font-medium text-slate-500 uppercase mb-2">Estrategia de Composición</h4>
+              <ul class="text-sm text-slate-300 space-y-1">
+                <li class="flex items-start gap-2">
+                  <i data-lucide="check-circle" class="w-4 h-4 text-green-400 mt-0.5 shrink-0"></i>
+                  <span><strong>Análisis de clips:</strong> Detectar cortes naturales, beats</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i data-lucide="check-circle" class="w-4 h-4 text-green-400 mt-0.5 shrink-0"></i>
+                  <span><strong>Overlay generation:</strong> Textos, logos, CTAs animados</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i data-lucide="check-circle" class="w-4 h-4 text-green-400 mt-0.5 shrink-0"></i>
+                  <span><strong>Transiciones:</strong> Match cuts, transiciones fluidas</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="bg-slate-800/50 rounded-lg p-4">
+              <h4 class="text-xs font-medium text-slate-500 uppercase mb-2">Decisiones del Agente</h4>
+              <div class="flex flex-wrap gap-2">
+                <span class="px-2 py-1 bg-slate-700 rounded text-xs">Posición texto</span>
+                <span class="px-2 py-1 bg-slate-700 rounded text-xs">Timing de CTAs</span>
+                <span class="px-2 py-1 bg-slate-700 rounded text-xs">Color correction</span>
+                <span class="px-2 py-1 bg-slate-700 rounded text-xs">Audio sync</span>
+              </div>
+            </div>
+
+            <div class="border-t border-slate-700 pt-4">
+              <h4 class="text-xs font-medium text-slate-500 uppercase mb-2">→ Output Final</h4>
+              <code class="text-xs bg-slate-950 p-2 rounded block text-green-400">
+                { final_video.mp4, composition_manifest.json }
+              </code>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Code Snippets -->
+    <section class="mb-12">
+      <h2 class="text-lg font-semibold mb-6 text-slate-400 uppercase tracking-wider">Implementación: Code Snippets</h2>
+
+      <div class="space-y-6">
+
+        <!-- Layer 1 Code -->
+        <div class="bg-slate-900 rounded-xl border border-slate-700 overflow-hidden">
+          <div class="bg-slate-800 px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="w-2 h-2 rounded-full bg-orange-500"></span>
+              <span class="font-medium text-sm">Layer 1: ConceptAgent</span>
+            </div>
+            <span class="text-xs text-slate-500">concept-agent.ts</span>
+          </div>
+          <div class="p-4 overflow-x-auto">
+            <pre class="text-xs text-slate-300 font-mono leading-relaxed"><code>class ConceptAgent {
+  async generateConcept(projectId: string, brief: string): Promise&lt;VideoConcept&gt; {
+    const project = await this.projectService.getById(projectId);
+
+    // Estrategia: Contexto jerárquico + few-shot examples
+    const systemPrompt = await this.buildContextPrompt(project.contextId);
+
+    const conceptSchema = z.object({
+      title: z.string(),
+      description: z.string(),
+      scenes: z.array(z.object({
+        sequence: z.number(),
+        description: z.string(),
+        emotion: z.enum(['excitement', 'urgency', 'motivation']),
+        duration: z.number().min(3).max(10),
+        keyMessage: z.string(),
+      })),
+      cta: z.object({
+        text: z.string(),
+        timing: z.number(), // en qué segundo aparece
+      }),
+    });
+
+    const response = await this.openCodeSDK.sendPromptStructured(
+      `${systemPrompt}\n\nBrief del usuario: ${brief}\n\nGenera un concepto de video para Instagram Reels.`,
+      conceptSchema,
+      { retryCount: 2 }
+    );
+
+    // Decisiones autónomas del agente
+    const concept = response.data;
+    const totalDuration = concept.scenes.reduce((sum, s) => sum + s.duration, 0);
+
+    if (totalDuration > 60) {
+      // Agente auto-ajusta: sugiere split en múltiples videos
+      concept.splitRecommendation = this.calculateOptimalSplit(concept.scenes);
+    }
+
+    return concept;
+  }
+}</code></pre>
+          </div>
+        </div>
+
+        <!-- Layer 2 Code -->
+        <div class="bg-slate-900 rounded-xl border border-slate-700 overflow-hidden">
+          <div class="bg-slate-800 px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+              <span class="font-medium text-sm">Layer 2: PromptEngineerAgent</span>
+            </div>
+            <span class="text-xs text-slate-500">prompt-agent.ts</span>
+          </div>
+          <div class="p-4 overflow-x-auto">
+            <pre class="text-xs text-slate-300 font-mono leading-relaxed"><code>class PromptEngineerAgent {
+  async craftMiniMaxPrompt(scene: Scene, feedback?: string): Promise&lt;MiniMaxPrompt&gt; {
+
+    // Estrategia: Meta-prompting con contexto técnico de MiniMax
+    const metaPrompt = `Eres un experto en prompts para MiniMax Hailuo AI.
+
+Directrices técnicas:
+- MiniMax funciona mejor con prompts en inglés
+- Incluir términos de cámara: "panning shot", "static camera", "drone view"
+- Describir movimiento: "slow motion", "dynamic action", "smooth transition"
+- Especificar iluminación: "golden hour", "studio lighting", "dramatic shadows"
+
+Contexto de la escena:
+- Descripción: ${scene.description}
+- Emoción: ${scene.emotion}
+- Duración: ${scene.duration}s
+${feedback ? `- Feedback de iteración anterior: ${feedback}` : ''}`;
+
+    const promptSchema = z.object({
+      prompt: z.string().max(500), // MiniMax limit
+      negativePrompt: z.string(),
+      styleModifiers: z.array(z.string()),
+      cameraDirection: z.enum(['static', 'pan', 'zoom', 'tracking', 'drone']),
+      lighting: z.enum(['natural', 'studio', 'dramatic', 'golden_hour']),
+    });
+
+    const response = await this.openCodeSDK.sendPromptStructured(metaPrompt, promptSchema);
+
+    return {
+      prompt: this.optimizeForMiniMax(response.data.prompt),
+      negativePrompt: response.data.negativePrompt,
+      parameters: {
+        duration: scene.duration as 6 | 8 | 10,
+        resolution: '1080p',
+      },
+    };
+  }
+
+  // Auto-iteración: Si el video previo falló, ajusta el prompt
+  async regenerateWithFix(failedAttempt: SceneAttempt, error: string): Promise&lt;MiniMaxPrompt&gt; {
+    const fixStrategy = this.analyzeError(error);
+
+    const feedback = `El video anterior falló con: "${error}".
+Aplica esta estrategia de fix: ${fixStrategy}`;
+
+    return this.craftMiniMaxPrompt(failedAttempt.scene, feedback);
+  }
+
+  private analyzeError(error: string): string {
+    if (error.includes('blurry')) return 'Agrega "sharp focus, 4k, highly detailed"';
+    if (error.includes('text')) return 'Evita texto en la imagen; usa "no text, no watermark"';
+    if (error.includes('face')) return 'Mejora calidad facial: "perfect face, detailed features"';
+    return 'Simplifica el prompt, reduce elementos complejos';
+  }
+}</code></pre>
+          </div>
+        </div>
+
+        <!-- Layer 3 Code -->
+        <div class="bg-slate-900 rounded-xl border border-slate-700 overflow-hidden">
+          <div class="bg-slate-800 px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+              <span class="font-medium text-sm">Layer 3: GenerationAgent</span>
+            </div>
+            <span class="text-xs text-slate-500">generation-agent.ts</span>
+          </div>
+          <div class="p-4 overflow-x-auto">
+            <pre class="text-xs text-slate-300 font-mono leading-relaxed"><code>class GenerationAgent {
+  private promptAgent = new PromptEngineerAgent();
+  private miniMaxService = new MiniMaxService();
+
+  async generateWithAutoRetry(scene: Scene, maxRetries = 2): Promise&lt;GenerationResult&gt; {
+    let attempt = 0;
+    let lastError: string | null = null;
+
+    while (attempt <= maxRetries) {
+      try {
+        // Obtener o regenerar prompt
+        const miniMaxPrompt = attempt === 0
+          ? await this.promptAgent.craftMiniMaxPrompt(scene)
+          : await this.promptAgent.regenerateWithFix({ scene, attempt }, lastError!);
+
+        // Crear tarea en MiniMax
+        const task = await this.miniMaxService.createVideoGeneration({
+          prompt: miniMaxPrompt.prompt,
+          duration: miniMaxPrompt.parameters.duration,
+          resolution: miniMaxPrompt.parameters.resolution,
+        });
+
+        // Polling con quality gate
+        const result = await this.pollWithQualityGate(task.taskId, scene);
+
+        if (result.quality === 'good') {
+          return { success: true, clipPath: result.path, metadata: result.metadata };
+        }
+
+        // Quality gate falló, trigger auto-retry
+        lastError = `Quality issue: ${result.qualityIssues.join(', ')}`;
+        attempt++;
+
+      } catch (error) {
+        lastError = error instanceof Error ? error.message : 'Unknown error';
+        attempt++;
+      }
+    }
+
+    // Todos los retries fallaron → Escalar a Layer 2 con feedback completo
+    return this.escalateToLayer2(scene, lastError!);
+  }
+
+  private async pollWithQualityGate(
+    taskId: string,
+    scene: Scene
+  ): Promise&lt;QualityGateResult&gt; {
+    const clipPath = await this.miniMaxService.waitForCompletion(taskId);
+
+    // Quality gate automático
+    const analysis = await this.analyzeVideoQuality(clipPath);
+
+    const issues: string[] = [];
+    if (analysis.blurScore < 0.7) issues.push('blurry');
+    if (analysis.duration < scene.duration - 1) issues.push('truncated');
+    if (analysis.hasWatermark) issues.push('watermark detected');
+
+    return {
+      path: clipPath,
+      quality: issues.length === 0 ? 'good' : 'poor',
+      qualityIssues: issues,
+      metadata: analysis,
+    };
+  }
+
+  private async escalateToLayer2(scene: Scene, error: string): Promise&lt;never&gt; {
+    throw new GenerationEscalationError(
+      'Generation failed after retries',
+      { scene, error, requiresUserReview: true }
+    );
+  }
+}</code></pre>
+          </div>
+        </div>
+
+        <!-- Layer 4 Code -->
+        <div class="bg-slate-900 rounded-xl border border-slate-700 overflow-hidden">
+          <div class="bg-slate-800 px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="w-2 h-2 rounded-full bg-green-500"></span>
+              <span class="font-medium text-sm">Layer 4: CompositionAgent</span>
+            </div>
+            <span class="text-xs text-slate-500">composition-agent.ts</span>
+          </div>
+          <div class="p-4 overflow-x-auto">
+            <pre class="text-xs text-slate-300 font-mono leading-relaxed"><code>class CompositionAgent {
+  async composeFinalVideo(videoId: string): Promise&lt;CompositionResult&gt; {
+    const video = await this.videoService.getById(videoId);
+    const scenes = await this.sceneService.getByVideoId(videoId);
+
+    // Análisis de beats y cortes naturales
+    const beatAnalysis = await this.analyzeSceneBeats(scenes);
+
+    // Generar overlays con Remotion (React code)
+    const compositionCode = await this.generateRemotionComposition({
+      video,
+      scenes,
+      overlays: this.calculateOverlays(video, scenes),
+      transitions: this.calculateTransitions(beatAnalysis),
+    });
+
+    // Render con Remotion
+    const remotionBundle = await this.bundleComposition(compositionCode);
+
+    // Concatenar clips con FFmpeg
+    const finalVideo = await this.ffmpegConcat({
+      scenes: scenes.map(s => ({
+        clip: s.clipPath,
+        overlay: s.overlayPath,
+        duration: s.duration,
+        transition: s.transition,
+      })),
+      output: `videos/${videoId}/final.mp4`,
+    });
+
+    return {
+      finalPath: finalVideo,
+      manifest: {
+        scenes: scenes.length,
+        totalDuration: scenes.reduce((sum, s) => sum + s.duration, 0),
+        overlays: compositionCode.overlays.length,
+      },
+    };
+  }
+
+  private calculateOverlays(video: Video, scenes: Scene[]): Overlay[] {
+    const overlays: Overlay[] = [];
+
+    // Logo persistente en corner
+    overlays.push({
+      type: 'logo',
+      asset: `projects/${video.projectId}/assets/logo.png`,
+      position: { x: 20, y: 20 },
+      scale: 0.15,
+      duration: 'full',
+    });
+
+    // CTAs por escena
+    scenes.forEach((scene, index) => {
+      if (scene.context?.textOverlay) {
+        overlays.push({
+          type: 'text',
+          text: scene.context.textOverlay.headline,
+          position: scene.context.textOverlay.position,
+          animation: index === 0 ? 'fadeIn' : 'slideUp',
+          timing: { start: 0.5, duration: scene.duration - 1 },
+        });
+      }
+    });
+
+    return overlays;
+  }
+
+  private async generateRemotionComposition(config: CompositionConfig): Promise&lt;string&gt; {
+    // Agente genera código React/Remotion
+    const prompt = `Genera un componente Remotion que:
+- Renderice en 1080x1920 (9:16)
+- Aplique estos overlays: ${JSON.stringify(config.overlays)}
+- Use transiciones: ${JSON.stringify(config.transitions)}
+- Duración total: ${config.scenes.reduce((s, sc) => s + sc.duration, 0)}s
+
+Responde SOLO con el código TypeScript válido.`;
+
+    const code = await this.openCodeSDK.sendPrompt(prompt);
+    return this.validateAndFormatRemotionCode(code.content);
+  }
+}</code></pre>
+          </div>
+        </div>
+
+        <!-- Orchestrator Code -->
+        <div class="bg-slate-900 rounded-xl border border-slate-700 overflow-hidden">
+          <div class="bg-slate-800 px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="w-2 h-2 rounded-full bg-pink-500"></span>
+              <span class="font-medium text-sm">Orchestrator: Agente Coordinador</span>
+            </div>
+            <span class="text-xs text-slate-500">orchestrator.ts</span>
+          </div>
+          <div class="p-4 overflow-x-auto">
+            <pre class="text-xs text-slate-300 font-mono leading-relaxed"><code>class VideoOrchestrator {
+  private agents = {
+    concept: new ConceptAgent(),
+    prompt: new PromptEngineerAgent(),
+    generation: new GenerationAgent(),
+    composition: new CompositionAgent(),
+  };
+
+  async processVideoRequest(request: VideoRequest): Promise&lt;VideoResult&gt; {
+    const state: WorkflowState = {
+      videoId: generateId(),
+      status: 'concept_pending',
+      layers: {},
+    };
+
+    // Layer 1: Concepto
+    const concept = await this.agents.concept.generateConcept(
+      request.projectId,
+      request.brief
+    );
+    state.layers.concept = { status: 'completed', data: concept };
+
+    // Approval gate: Usuario revisa y aprueba concepto
+    await this.waitForUserApproval('concept', state.videoId);
+
+    // Layers 2-3 por cada escena (paralelo con manejo de errores)
+    const scenePromises = concept.scenes.map(async (sceneConfig, index) => {
+      const scene = await this.createScene(state.videoId, index + 1, sceneConfig);
+
+      try {
+        // Layer 2: Prompt
+        const prompt = await this.agents.prompt.craftMiniMaxPrompt(scene);
+        scene.minimaxPrompt = prompt;
+
+        // Layer 3: Generación (con auto-retry)
+        const result = await this.agents.generation.generateWithAutoRetry(scene);
+
+        scene.status = 'completed';
+        scene.clipPath = result.clipPath;
+
+        return scene;
+      } catch (error) {
+        if (error instanceof GenerationEscalationError) {
+          // Escalar a revisión manual
+          scene.status = 'manual_review_required';
+          await this.notifyUser(error.context);
+          return this.waitForManualFix(scene);
+        }
+        throw error;
+      }
+    });
+
+    const completedScenes = await Promise.all(scenePromises);
+
+    // Approval gate: Usuario revisa clips generados
+    await this.waitForUserApproval('clips', state.videoId);
+
+    // Layer 4: Composición final
+    const composition = await this.agents.composition.composeFinalVideo(state.videoId);
+
+    return {
+      videoId: state.videoId,
+      concept,
+      scenes: completedScenes,
+      finalVideo: composition.finalPath,
+    };
+  }
+
+  // Manejo de feedback: Usuario puede iterar cualquier capa
+  async handleIterationRequest(videoId: string, layer: Layer, feedback: string) {
+    const video = await this.videoService.getById(videoId);
+
+    switch (layer) {
+      case 'concept':
+        // Re-generar concepto completo
+        return this.agents.concept.generateConcept(video.projectId, feedback);
+
+      case 'prompt':
+        // Re-generar prompts para todas las escenas
+        const scenes = await this.sceneService.getByVideoId(videoId);
+        return Promise.all(scenes.map(s =>
+          this.agents.prompt.craftMiniMaxPrompt(s, feedback)
+        ));
+
+      case 'generation':
+        // Re-generar clips específicos
+        return this.regenerateClips(videoId, feedback);
+
+      case 'composition':
+        // Re-componer con ajustes
+        return this.agents.composition.composeFinalVideo(videoId);
+    }
+  }
+}</code></pre>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- State Management & Events -->
+    <section class="mb-12">
+      <h2 class="text-lg font-semibold mb-6 text-slate-400 uppercase tracking-wider">Estado & Eventos del Workflow</h2>
+
+      <div class="bg-slate-900 rounded-xl border border-slate-700 overflow-hidden">
+        <div class="bg-slate-800 px-4 py-3 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="w-2 h-2 rounded-full bg-cyan-500"></span>
+            <span class="font-medium text-sm">State Machine & Event Bus</span>
+          </div>
+          <span class="text-xs text-slate-500">workflow-state.ts</span>
+        </div>
+        <div class="p-4 overflow-x-auto">
+          <pre class="text-xs text-slate-300 font-mono leading-relaxed"><code>// Estado de cada capa (layer)
+interface LayerState<T> {
+  status: 'pending' | 'running' | 'completed' | 'failed' | 'manual_review';
+  data?: T;
+  error?: string;
+  attempts: number;
+  startedAt?: Date;
+  completedAt?: Date;
+}
+
+// Estado completo del workflow
+interface WorkflowState {
+  videoId: string;
+  status: WorkflowStatus;
+  layers: {
+    concept: LayerState<VideoConcept>;
+    prompts: LayerState<MiniMaxPrompt[]>;
+    generation: LayerState<GenerationResult[]>;
+    composition: LayerState<CompositionResult>;
+  };
+  // Permite saltar a cualquier capa para iterar
+  currentFocus?: 'concept' | 'prompts' | 'generation' | 'composition';
+}
+
+// Eventos para UI en tiempo real
+type WorkflowEvent =
+  | { type: 'layer_started'; layer: string; timestamp: number }
+  | { type: 'layer_completed'; layer: string; result: unknown }
+  | { type: 'layer_failed'; layer: string; error: string; canRetry: boolean }
+  | { type: 'approval_required'; layer: string; preview: unknown }
+  | { type: 'iteration_requested'; fromLayer: string; toLayer: string; feedback: string }
+  | { type: 'auto_retry_triggered'; layer: string; attempt: number; reason: string };
+
+// EventBus para comunicación entre agentes y UI
+class WorkflowEventBus {
+  private listeners = new Map<string, Set<(event: WorkflowEvent) => void>>();
+
+  emit(event: WorkflowEvent) {
+    const layerListeners = this.listeners.get(event.type);
+    layerListeners?.forEach(cb => cb(event));
+
+    // Broadcast a listeners globales
+    this.listeners.get('*')?.forEach(cb => cb(event));
+  }
+
+  on(eventType: string, callback: (event: WorkflowEvent) => void) {
+    if (!this.listeners.has(eventType)) {
+      this.listeners.set(eventType, new Set());
+    }
+    this.listeners.get(eventType)!.add(callback);
+  }
+}
+
+// Ejemplo: UI escucha eventos
+const eventBus = new WorkflowEventBus();
+
+eventBus.on('layer_started', (e) => {
+  console.log(`🟡 ${e.layer} started`);
+  updateUIStatus(e.layer, 'running');
+});
+
+eventBus.on('layer_failed', (e) => {
+  console.log(`🔴 ${e.layer} failed: ${e.error}`);
+  if (e.canRetry) {
+    showRetryButton(e.layer);
+  } else {
+    showManualReviewModal(e.layer, e.error);
+  }
+});
+
+eventBus.on('approval_required', (e) => {
+  console.log(`🔵 Approval needed for ${e.layer}`);
+  showApprovalGate(e.layer, e.preview);
+});</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Flujo Agentico con Feedback Loops -->
+    <section class="mb-12">
+      <h2 class="text-lg font-semibold mb-6 text-slate-400 uppercase tracking-wider">Flujo Agentico con Feedback Loops</h2>
+
+      <div class="bg-slate-900 rounded-2xl p-8 border border-slate-700">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+          <!-- Secuencia Principal -->
+          <div class="md:col-span-2">
+            <svg viewBox="0 0 800 400" class="w-full">
+              <!-- Background -->
+              <rect width="800" height="400" fill="transparent"/>
+
+              <!-- Nodes -->
+              <g class="agent-pulse">
+                <rect x="20" y="160" width="140" height="80" rx="12" fill="#1e293b" stroke="#f57e24" stroke-width="2"/>
+                <text x="90" y="195" text-anchor="middle" fill="#f57e24" font-size="12" font-weight="600">Layer 1</text>
+                <text x="90" y="215" text-anchor="middle" fill="#94a3b8" font-size="10">Concepto</text>
+              </g>
+
+              <g class="agent-pulse" style="animation-delay: 0.5s">
+                <rect x="220" y="160" width="140" height="80" rx="12" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+                <text x="290" y="195" text-anchor="middle" fill="#3b82f6" font-size="12" font-weight="600">Layer 2</text>
+                <text x="290" y="215" text-anchor="middle" fill="#94a3b8" font-size="10">Prompt</text>
+              </g>
+
+              <g class="agent-pulse" style="animation-delay: 1s">
+                <rect x="420" y="160" width="140" height="80" rx="12" fill="#1e293b" stroke="#a855f7" stroke-width="2"/>
+                <text x="490" y="195" text-anchor="middle" fill="#a855f7" font-size="12" font-weight="600">Layer 3</text>
+                <text x="490" y="215" text-anchor="middle" fill="#94a3b8" font-size="10">Generación</text>
+              </g>
+
+              <g class="agent-pulse" style="animation-delay: 1.5s">
+                <rect x="620" y="160" width="140" height="80" rx="12" fill="#1e293b" stroke="#22c55e" stroke-width="2"/>
+                <text x="690" y="195" text-anchor="middle" fill="#22c55e" font-size="12" font-weight="600">Layer 4</text>
+                <text x="690" y="215" text-anchor="middle" fill="#94a3b8" font-size="10">Composición</text>
+              </g>
+
+              <!-- Arrows -->
+              <path d="M160 200 L220 200" stroke="#475569" stroke-width="2" marker-end="url(#arrowhead)" class="flow-arrow"/>
+              <path d="M360 200 L420 200" stroke="#475569" stroke-width="2" marker-end="url(#arrowhead)" class="flow-arrow" style="animation-delay: 0.5s"/>
+              <path d="M560 200 L620 200" stroke="#475569" stroke-width="2" marker-end="url(#arrowhead)" class="flow-arrow" style="animation-delay: 1s"/>
+
+              <!-- Feedback loops -->
+              <path d="M490 160 Q490 80 290 80 Q90 80 90 160" stroke="#ef4444" stroke-width="2" fill="none" stroke-dasharray="5,5" marker-end="url(#arrowhead-red)"/>
+              <text x="290" y="70" text-anchor="middle" fill="#ef4444" font-size="10">Feedback: Regenerar</text>
+
+              <path d="M690 160 Q690 50 290 50 Q90 50 90 160" stroke="#f59e0b" stroke-width="2" fill="none" stroke-dasharray="5,5" marker-end="url(#arrowhead-yellow)"/>
+              <text x="390" y="35" text-anchor="middle" fill="#f59e0b" font-size="10">Iteración desde composición</text>
+
+              <!-- User approval checkpoint -->
+              <rect x="320" y="300" width="160" height="50" rx="25" fill="#0f172a" stroke="#22d3ee" stroke-width="2"/>
+              <text x="400" y="320" text-anchor="middle" fill="#22d3ee" font-size="11" font-weight="600">User Approval</text>
+              <text x="400" y="335" text-anchor="middle" fill="#64748b" font-size="9">Punto de decisión</text>
+
+              <!-- Arrow to approval -->
+              <path d="M160 240 L160 325 L320 325" stroke="#22d3ee" stroke-width="2" marker-end="url(#arrowhead-cyan)" stroke-dasharray="3,3"/>
+
+              <!-- Markers -->
+              <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                  <polygon points="0 0, 10 3, 0 6" fill="#475569"/>
+                </marker>
+                <marker id="arrowhead-red" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                  <polygon points="0 0, 10 3, 0 6" fill="#ef4444"/>
+                </marker>
+                <marker id="arrowhead-yellow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                  <polygon points="0 0, 10 3, 0 6" fill="#f59e0b"/>
+                </marker>
+                <marker id="arrowhead-cyan" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                  <polygon points="0 0, 10 3, 0 6" fill="#22d3ee"/>
+                </marker>
+              </defs>
+            </svg>
+          </div>
+
+          <!-- Leyenda de Feedback -->
+          <div class="space-y-4">
+            <h3 class="font-medium text-slate-300">Tipos de Feedback</h3>
+
+            <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+              <div class="flex items-center gap-2 mb-2">
+                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                <span class="font-medium text-red-400 text-sm">Regeneración</span>
+              </div>
+              <p class="text-xs text-slate-400">
+                Si MiniMax falla o el clip es de baja calidad, el agente vuelve a Layer 2 para reescribir el prompt.
+              </p>
+            </div>
+
+            <div class="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+              <div class="flex items-center gap-2 mb-2">
+                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                <span class="font-medium text-yellow-400 text-sm">Iteración creativa</span>
+              </div>
+              <p class="text-xs text-slate-400">
+                El usuario puede solicitar cambios desde cualquier punto, saltando a la capa correspondiente.
+              </p>
+            </div>
+
+            <div class="p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
+              <div class="flex items-center gap-2 mb-2">
+                <div class="w-3 h-3 rounded-full bg-cyan-500"></div>
+                <span class="font-medium text-cyan-400 text-sm">Approval Gates</span>
+              </div>
+              <p class="text-xs text-slate-400">
+                Puntos donde el usuario aprueba/rechaza antes de continuar al siguiente layer.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ejemplo de Iteración -->
+    <section class="mb-12">
+      <h2 class="text-lg font-semibold mb-6 text-slate-400 uppercase tracking-wider">Ejemplo: Iteración en Tiempo Real</h2>
+
+      <div class="bg-slate-900 rounded-2xl p-6 border border-slate-700">
+        <div class="space-y-6">
+
+          <!-- Paso 1 -->
+          <div class="flex gap-4">
+            <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-sm font-bold shrink-0">1</div>
+            <div class="flex-1">
+              <p class="text-slate-300 mb-2">
+                <strong>Usuario:</strong> "Quiero un video sobre promoción de verano"
+              </p>
+              <div class="bg-slate-800 rounded-lg p-3">
+                <p class="text-xs text-slate-500 mb-1">→ Layer 1 (Concepto) genera:</p>
+                <code class="text-sm text-orange-400">{ title: "Verano Fitness", scenes: 3, ... }</code>
+              </div>
+            </div>
+          </div>
+
+          <!-- Paso 2 -->
+          <div class="flex gap-4">
+            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-sm font-bold shrink-0">2</div>
+            <div class="flex-1">
+              <p class="text-slate-300 mb-2">
+                <strong>Usuario:</strong> "Cambia la primera escena, quiero que sea más dramática"
+              </p>
+              <div class="bg-slate-800 rounded-lg p-3">
+                <p class="text-xs text-slate-500 mb-1">→ Salta a Layer 2 (Prompt), modifica:</p>
+                <code class="text-sm text-blue-400">{ emotion: "dramatic", lighting: "chiaroscuro", ... }</code>
+              </div>
+            </div>
+          </div>
+
+          <!-- Paso 3 -->
+          <div class="flex gap-4">
+            <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-sm font-bold shrink-0">3</div>
+            <div class="flex-1">
+              <p class="text-slate-300 mb-2">
+                <strong>Layer 3:</strong> Genera el video con MiniMax...
+              </p>
+              <div class="bg-slate-800 rounded-lg p-3">
+                <p class="text-xs text-slate-500 mb-1">→ Quality gate detecta: el video está borroso</p>
+                <p class="text-xs text-slate-400">
+                  <span class="text-yellow-400">Auto-retry:</span> Consulta a Layer 2 → Agrega "sharp focus, 4k quality" al prompt → Re-genera
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Paso 4 -->
+          <div class="flex gap-4">
+            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-sm font-bold shrink-0">4</div>
+            <div class="flex-1">
+              <p class="text-slate-300 mb-2">
+                <strong>Usuario:</strong> "Perfecto, pero agrega el logo más grande"
+              </p>
+              <div class="bg-slate-800 rounded-lg p-3">
+                <p class="text-xs text-slate-500 mb-1">→ Layer 4 ajusta composición:</p>
+                <code class="text-sm text-green-400">{ overlay: { logo: { scale: 1.5, position: "top-center" } } }</code>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- UI Implications -->
+    <section>
+      <h2 class="text-lg font-semibold mb-6 text-slate-400 uppercase tracking-wider">Implicaciones para la UI</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-slate-900 rounded-xl p-5 border border-slate-700">
+          <i data-lucide="layers" class="w-8 h-8 text-orange-400 mb-3"></i>
+          <h3 class="font-medium mb-2">Vista por Capas</h3>
+          <p class="text-sm text-slate-400">
+            La UI debe permitir "bajar" a cualquier capa y editar. No es un wizard lineal.
+          </p>
+        </div>
+
+        <div class="bg-slate-900 rounded-xl p-5 border border-slate-700">
+          <i data-lucide="activity" class="w-8 h-8 text-purple-400 mb-3"></i>
+          <h3 class="font-medium mb-2">Estado en Tiempo Real</h3>
+          <p class="text-sm text-slate-400">
+            Cada capa muestra su estado: "pensando", "generando", "revisar", "aprobado".
+          </p>
+        </div>
+
+        <div class="bg-slate-900 rounded-xl p-5 border border-slate-700">
+          <i data-lucide="git-branch" class="w-8 h-8 text-green-400 mb-3"></i>
+          <h3 class="font-medium mb-2">Versionamiento</h3>
+          <p class="text-sm text-slate-400">
+            Cada iteración crea una rama. El usuario puede comparar y volver a versiones anteriores.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scene Builder - OpenCode ACP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .chat-scroll::-webkit-scrollbar { width: 6px; }
+    .chat-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    .video-preview { aspect-ratio: 9/16; }
+    .typing-dot { animation: typing 1.4s infinite ease-in-out both; }
+    .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+    .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes typing {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900" x-data="{
+  messages: [
+    { role: 'assistant', content: '¡Hola! Soy tu asistente de video. Describe qué tipo de escena quieres crear y yo generaré el código necesario.' }
+  ],
+  input: '',
+  isGenerating: false,
+  previewMode: 'preview', // 'preview' | 'code'
+  generatedCode: null,
+  generationStatus: 'idle', // 'idle' | 'queued' | 'processing' | 'completed'
+  scene: {
+    name: 'Escena 1: Hook',
+    duration: 4,
+    status: 'draft'
+  }
+}">
+
+  <!-- Header -->
+  <header class="bg-slate-900 text-white px-6 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <button class="p-2 hover:bg-slate-800 rounded-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+      <div>
+        <h1 class="font-semibold">Scene Builder</h1>
+        <p class="text-slate-400 text-xs">OpenCode ACP • Scene #2</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-800 rounded-lg">
+        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+        <span class="text-xs text-slate-300">ACP</span>
+        <span class="text-xs text-green-400 font-mono">connected</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex h-[calc(100vh-60px)]">
+
+    <!-- LEFT: Preview -->
+    <div class="w-1/2 bg-slate-900 flex flex-col">
+
+      <!-- Preview Tabs -->
+      <div class="flex items-center gap-1 p-2 border-b border-slate-800">
+        <button
+          @click="previewMode = 'preview'"
+          :class="previewMode === 'preview' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white'"
+          class="px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Preview
+        </button>
+        <button
+          @click="previewMode = 'code'"
+          :class="previewMode === 'code' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white'"
+          class="px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+          Código
+        </button>
+      </div>
+
+      <!-- Preview Content -->
+      <div class="flex-1 flex items-center justify-center p-8">
+
+        <!-- Video Preview -->
+        <div x-show="previewMode === 'preview'" class="text-center">
+          <div class="video-preview w-[280px] bg-gradient-to-br from-blue-900 to-purple-900 rounded-2xl flex flex-col items-center justify-center text-white p-6 shadow-2xl mx-auto">
+            <div class="grid grid-cols-2 gap-4 w-full">
+              <div class="bg-white/10 backdrop-blur rounded-xl p-4 text-center">
+                <div class="text-3xl font-bold text-orange-400">+1000</div>
+                <div class="text-xs text-white/70 mt-1">transformaciones</div>
+              </div>
+              <div class="bg-white/10 backdrop-blur rounded-xl p-4 text-center">
+                <div class="text-3xl font-bold text-orange-400">98%</div>
+                <div class="text-xs text-white/70 mt-1">satisfacción</div>
+              </div>
+            </div>
+          </div>
+          <p class="text-slate-400 text-sm mt-4">Vista previa de la escena</p>
+          <div class="flex items-center justify-center gap-2 mt-2">
+            <span class="text-xs text-slate-500">4.0s</span>
+            <span class="text-slate-600">•</span>
+            <span class="text-xs text-slate-500">1080x1920</span>
+          </div>
+        </div>
+
+        <!-- Code View -->
+        <div x-show="previewMode === 'code'" class="w-full max-w-lg">
+          <div class="bg-slate-950 rounded-xl overflow-hidden border border-slate-800">
+            <div class="bg-slate-900 px-4 py-2 flex items-center justify-between border-b border-slate-800">
+              <span class="text-xs text-slate-400">scene-02.tsx</span>
+              <button class="text-xs text-slate-400 hover:text-white flex items-center gap-1">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                Copiar
+              </button>
+            </div>
+            <pre class="p-4 text-xs text-slate-300 overflow-x-auto"><code>export const Scene02: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { durationInFrames } = useVideoConfig();
+
+  return (
+    &lt;AbsoluteFill className="bg-gradient-to-br from-blue-900 to-purple-900"&gt;
+      &lt;div className="grid grid-cols-2 gap-4 p-8"&gt;
+        &lt;StatCard value="+1000" label="transformaciones" /&gt;
+        &lt;StatCard value="98%" label="satisfacción" /&gt;
+      &lt;/div&gt;
+    &lt;/AbsoluteFill&gt;
+  );
+};</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Actions -->
+      <div class="p-4 border-t border-slate-800 bg-slate-900/50">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="text-sm text-slate-400">Estado:</span>
+            <span class="px-2 py-1 bg-yellow-500/20 text-yellow-400 text-xs rounded-full border border-yellow-500/30">
+              Borrador
+            </span>
+          </div>
+          <button
+            @click="generationStatus = 'queued'"
+            :disabled="generationStatus !== 'idle'"
+            class="px-4 py-2 bg-orange-500 hover:bg-orange-600 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-lg text-sm font-medium flex items-center gap-2"
+          >
+            <svg x-show="generationStatus === 'idle'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span x-show="generationStatus === 'idle'">Generar Video</span>
+            <span x-show="generationStatus === 'queued'">En cola...</span>
+            <span x-show="generationStatus === 'processing'">Generando...</span>
+            <span x-show="generationStatus === 'completed'">¡Listo!</span>
+          </button>
+        </div>
+
+        <!-- Generation Progress (show when processing) -->
+        <div x-show="generationStatus !== 'idle'" class="mt-3">
+          <div class="flex justify-between text-xs text-slate-400 mb-1">
+            <span>Progreso</span>
+            <span>45%</span>
+          </div>
+          <div class="w-full bg-slate-800 rounded-full h-1.5">
+            <div class="bg-orange-500 h-1.5 rounded-full transition-all" style="width: 45%"></div>
+          </div>
+          <p class="text-xs text-slate-500 mt-1">Generando con MiniMax...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Chat with OpenCode -->
+    <div class="w-1/2 bg-white border-l border-slate-200 flex flex-col">
+
+      <!-- Chat Header -->
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+            <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <div>
+            <h3 class="font-medium text-sm">OpenCode Assistant</h3>
+            <p class="text-xs text-slate-500">via ACP • Optimizado para código</p>
+          </div>
+        </div>
+        <button class="p-2 hover:bg-slate-200 rounded-lg text-slate-400" title="Limpiar chat">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        </button>
+      </div>
+
+      <!-- Messages -->
+      <div class="flex-1 overflow-y-auto p-4 space-y-4 chat-scroll" id="chat-messages">
+
+        <!-- Welcome Message -->
+        <div class="flex gap-3">
+          <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <div class="flex-1">
+            <div class="bg-slate-100 rounded-2xl rounded-tl-sm px-4 py-3">
+              <p class="text-sm text-slate-700">¡Hola! Soy tu asistente de video conectado via OpenCode ACP.</p>
+              <p class="text-sm text-slate-700 mt-2">Describe qué escena quieres crear y yo generaré:</p>
+              <ul class="text-sm text-slate-600 mt-2 space-y-1 ml-4">
+                <li>• Código Remotion (React/TypeScript)</li>
+                <li>• Configuración de animaciones</li>
+                <li>• Prompt optimizado para MiniMax (si necesitas video AI)</li>
+              </ul>
+            </div>
+            <span class="text-xs text-slate-400 mt-1 ml-1">OpenCode</span>
+          </div>
+        </div>
+
+        <!-- Example User Message -->
+        <div class="flex gap-3 flex-row-reverse">
+          <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+          </div>
+          <div class="flex-1 flex justify-end">
+            <div class="bg-blue-500 text-white rounded-2xl rounded-tr-sm px-4 py-3 max-w-[80%]">
+              <p class="text-sm">Quiero una escena tipo "stats grid" que muestre "+1000 transformaciones" y "98% satisfacción". Estilo moderno con gradiente azul a morado.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Example Assistant Response -->
+        <div class="flex gap-3">
+          <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <div class="flex-1">
+            <div class="bg-slate-100 rounded-2xl rounded-tl-sm px-4 py-3">
+              <p class="text-sm text-slate-700">Perfecto! Generaré un componente Remotion con estadísticas animadas. Aquí está el código:</p>
+
+              <div class="mt-3 bg-slate-900 rounded-lg overflow-hidden">
+                <div class="bg-slate-800 px-3 py-1.5 flex items-center justify-between">
+                  <span class="text-xs text-slate-400">scene.tsx</span>
+                  <span class="text-xs text-green-400">Generado ✓</span>
+                </div>
+                <pre class="p-3 text-xs text-slate-300 overflow-x-auto"><code>const stats = [
+  { value: '+1000', label: 'transformaciones' },
+  { value: '98%', label: 'satisfacción' }
+];
+
+// Animación con spring</code></pre>
+              </div>
+
+              <p class="text-sm text-slate-700 mt-3">El código ya está en el panel izquierdo. ¿Quieres que ajuste algo o procedemos a generar el video?</p>
+            </div>
+            <div class="flex gap-2 mt-2">
+              <button class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-medium text-slate-600">
+                Ver cambios
+              </button>
+              <button class="px-3 py-1.5 bg-orange-100 hover:bg-orange-200 rounded-lg text-xs font-medium text-orange-600">
+                Generar video
+              </button>
+            </div>
+            <span class="text-xs text-slate-400 mt-1 ml-1">OpenCode • 2s</span>
+          </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div x-show="isGenerating" class="flex gap-3">
+          <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <div class="bg-slate-100 rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1">
+            <span class="w-2 h-2 bg-slate-400 rounded-full typing-dot"></span>
+            <span class="w-2 h-2 bg-slate-400 rounded-full typing-dot"></span>
+            <span class="w-2 h-2 bg-slate-400 rounded-full typing-dot"></span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Context Pills -->
+      <div class="px-4 py-2 border-t border-slate-200 bg-slate-50 flex items-center gap-2 overflow-x-auto">
+        <span class="text-xs text-slate-500 shrink-0">Contexto:</span>
+        <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full whitespace-nowrap">promo-verano-2024</span>
+        <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full whitespace-nowrap">conversion</span>
+        <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full whitespace-nowrap">scene-02</span>
+        <button class="text-xs text-slate-400 hover:text-slate-600 whitespace-nowrap">+ Agregar</button>
+      </div>
+
+      <!-- Input -->
+      <div class="p-4 border-t border-slate-200 bg-white">
+        <form @submit.prevent="
+          if (input.trim()) {
+            messages.push({ role: 'user', content: input });
+            input = '';
+            isGenerating = true;
+            setTimeout(() => {
+              isGenerating = false;
+              messages.push({ role: 'assistant', content: 'Entendido. He actualizado el código con los cambios solicitados. Revisa el preview.' });
+            }, 2000);
+          }
+        " class="relative">
+          <textarea
+            x-model="input"
+            placeholder="Describe qué quieres cambiar..."
+            class="w-full px-4 py-3 pr-12 border border-slate-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none text-sm"
+            rows="2"
+            @keydown.enter.prevent="
+              if ($event.shiftKey) return;
+              $event.target.form.dispatchEvent(new Event('submit'));
+            "
+          ></textarea>
+          <button
+            type="submit"
+            class="absolute right-3 bottom-3 p-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
+            :class="!input.trim() && 'opacity-50 cursor-not-allowed'"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+          </button>
+        </form>
+        <p class="text-xs text-slate-400 mt-2 text-center">Shift + Enter para nueva línea • Enter para enviar</p>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
